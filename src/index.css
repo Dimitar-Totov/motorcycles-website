@@ -4,19 +4,21 @@
   color-scheme: light;
 }
 
-html, body, #root {
-  height: 100%;
+html {
+  overflow-y: scroll;
 }
 
 body {
   @apply min-h-screen bg-slate-50 text-slate-950 antialiased;
   margin: 0;
-  /* Always reserve space for a vertical scrollbar so the layout doesn't shift */
-  overflow-y: scroll;
+}
+
+#root {
+  min-height: 100vh;
 }
 
 main {
-  @apply min-h-screen w-full bg-white px-6 py-10;
+  @apply min-h-screen w-full bg-slate-50 px-6 py-10;
 }
 
 section {
