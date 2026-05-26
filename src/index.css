@@ -1,5 +1,64 @@
 @import "tailwindcss";
 
+/* ── Dual-handle range slider ────────────────────────────────── */
+.catalog-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.catalog-range::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+}
+
+.catalog-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  pointer-events: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2.5px solid #dc2626;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
+  cursor: grab;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  margin-top: -7px;
+}
+
+.catalog-range::-webkit-slider-thumb:hover {
+  transform: scale(1.18);
+  box-shadow: 0 2px 10px rgba(220, 38, 38, 0.35);
+}
+
+.catalog-range::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.1);
+}
+
+.catalog-range::-moz-range-thumb {
+  pointer-events: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2.5px solid #dc2626;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
+  cursor: grab;
+}
+
+.catalog-range::-moz-range-track {
+  height: 6px;
+  background: transparent;
+}
+
 :root {
   color-scheme: light;
 }
