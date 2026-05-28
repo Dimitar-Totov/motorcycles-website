@@ -39,7 +39,11 @@ export default function Navbar() {
         <nav className="relative z-10 flex items-center justify-between h-[3.75rem] lg:h-[4.5rem] px-5 lg:px-8 rounded-full bg-slate-950/80 backdrop-blur-2xl border border-white/[0.08] shadow-[0_4px_28px_rgba(0,0,0,0.28)]">
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 lg:gap-3 shrink-0 group">
+          <Link
+            to="/"
+            className="flex items-center gap-2.5 lg:gap-3 shrink-0 group"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          >
             <span className="flex items-center justify-center w-[1.875rem] h-[1.875rem] lg:w-10 lg:h-10 rounded-full bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.4)] transition-shadow duration-200 group-hover:shadow-[0_0_20px_rgba(245,158,11,0.6)]">
               <Bike className="w-[1.05rem] h-[1.05rem] lg:w-5 lg:h-5 text-slate-950 stroke-[2.5]" />
             </span>
