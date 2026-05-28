@@ -42,7 +42,7 @@ export default function Footer() {
                 <span>Monday – Friday: 10am – 7pm</span>
                 <span>Saturday – Sunday: 11am – 5pm</span>
                 <span style={{ height: "4px" }} />
-                <a href="tel:+359000000000" className={styles.footerExtLink}>Tel: +359 000 000 000</a>
+                <span>Tel: +359 000 000 000</span>
                 <a href="mailto:info@yourdomain.com" className={styles.footerExtLink}>info@yourdomain.com</a>
               </div>
             </div>
@@ -71,7 +71,6 @@ export default function Footer() {
                   <NavLink to="/track-order" className={linkClass}>Track My Order</NavLink>
                   <NavLink to="/financing" className={linkClass}>Financing Info</NavLink>
                   <span style={{ height: "4px" }} />
-                  <a href="tel:+359000000000" className={styles.footerExtLink}>Tel: +359 000 000 000</a>
                   <a href="mailto:support@yourdomain.com" className={styles.footerExtLink}>support@yourdomain.com</a>
                 </div>
               </nav>
