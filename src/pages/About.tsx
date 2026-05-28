@@ -41,13 +41,19 @@ export default function About() {
         <div className={styles.inner}>
           {/* Left column */}
           <div className={styles.leftCol}>
-            <div className={styles.headingWrapper}>
+            <div
+              className={`${styles.headingWrapper} ${styles.animate}`}
+              style={{ '--delay': '0.1s' } as React.CSSProperties}
+            >
               <span className={styles.accentBar} aria-hidden="true" />
               <h1 className={styles.heading}>
                 Born for<br />every<br />open road.
               </h1>
             </div>
-            <p className={styles.bodyText}>
+            <p
+              className={`${styles.bodyText} ${styles.animate}`}
+              style={{ '--delay': '0.4s' } as React.CSSProperties}
+            >
               Since 2010, we've been more than a dealership — we're riders
               ourselves. Every bike we stock, every service we offer, is shaped
               by a genuine passion for the machine and the miles ahead.
@@ -56,10 +62,19 @@ export default function About() {
 
           {/* Right column */}
           <div className={styles.rightCol}>
-            <p className={styles.sectionLabel}>What We Do</p>
+            <p
+              className={`${styles.sectionLabel} ${styles.animate}`}
+              style={{ '--delay': '0.5s' } as React.CSSProperties}
+            >
+              What We Do
+            </p>
             <ul className={styles.serviceList} aria-label="Our services">
-              {services.map(({ icon: Icon, title, description }) => (
-                <li key={title} className={styles.serviceItem}>
+              {services.map(({ icon: Icon, title, description }, i) => (
+                <li
+                  key={title}
+                  className={`${styles.serviceItem} ${styles.animate}`}
+                  style={{ '--delay': `${0.65 + i * 0.15}s` } as React.CSSProperties}
+                >
                   <Icon
                     className={styles.serviceIcon}
                     aria-hidden="true"
