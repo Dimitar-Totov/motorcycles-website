@@ -4,9 +4,9 @@ import Navbar from "./components/navbar/Navbar";
 import Footer from "./components/footer/Footer";
 import BackToTopButton from "./components/BackToTopButton";
 
-import Home from "./pages/Home";
-import NotFound from "./pages/NotFound";
-import About from "./pages/About";
+import Home from "./pages/home/Home";
+import NotFound from "./pages/not-found/NotFound";
+import About from "./pages/about/About";
 import Service from "./pages/services/Service";
 import Contact from "./pages/contact/Contact";
 import Auth from "./pages/auth/Auth";

@@ -1,4 +1,4 @@
-import aboutImg from '../assets/about.jpg';
+import aboutImg from '../../assets/about.jpg';
 import { Building2, Wrench, PaintRoller } from 'lucide-react';
 import styles from './About.module.css';
 
