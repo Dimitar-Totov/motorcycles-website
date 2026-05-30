@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import About from "./pages/About";
 import Service from "./pages/services/Service";
+import Contact from "./pages/contact/Contact";
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Service />} />
+        <Route path="/contact" element={<Contact />} />
       </Routes>
       <Footer />
       <BackToTopButton />
