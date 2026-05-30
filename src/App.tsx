@@ -9,6 +9,8 @@ import NotFound from "./pages/NotFound";
 import About from "./pages/About";
 import Service from "./pages/services/Service";
 import Contact from "./pages/contact/Contact";
+import Auth from "./pages/auth/Auth";
+import Terms from "./pages/terms/Terms";
 
 
 function App() {
@@ -21,6 +23,8 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Service />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/terms" element={<Terms />} />
       </Routes>
       <Footer />
       <BackToTopButton />
