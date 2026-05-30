@@ -25,10 +25,9 @@ export default function Navbar() {
   };
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `text-sm lg:text-base font-medium transition-all duration-150 px-3 lg:px-4 py-1.5 lg:py-2 rounded-full whitespace-nowrap ${
-      isActive
-        ? "text-white bg-white/10"
-        : "text-slate-300 hover:text-white hover:bg-white/[0.07]"
+    `text-sm lg:text-base font-medium transition-all duration-150 px-3 lg:px-4 py-1.5 lg:py-2 rounded-full whitespace-nowrap ${isActive
+      ? "text-white bg-white/10"
+      : "text-slate-300 hover:text-white hover:bg-white/[0.07]"
     }`;
 
   return (
@@ -63,23 +62,29 @@ export default function Navbar() {
                 type="button"
                 aria-expanded={productsOpen}
                 aria-haspopup="true"
-                className={`flex items-center gap-1.5 text-sm lg:text-base font-medium transition-all duration-150 px-3 lg:px-4 py-1.5 lg:py-2 rounded-full cursor-pointer ${
-                  productsOpen
-                    ? "text-white bg-white/10"
-                    : "text-slate-300 hover:text-white hover:bg-white/[0.07]"
-                }`}
+                className={`flex items-center gap-1.5 text-sm lg:text-base font-medium transition-all duration-150 px-3 lg:px-4 py-1.5 lg:py-2 rounded-full cursor-pointer ${productsOpen
+                  ? "text-white bg-white/10"
+                  : "text-slate-300 hover:text-white hover:bg-white/[0.07]"
+                  }`}
               >
                 Products
                 <ChevronDown
-                  className={`w-3.5 h-3.5 lg:w-4 lg:h-4 transition-transform duration-200 ${
-                    productsOpen ? "rotate-180 text-amber-400" : ""
-                  }`}
+                  className={`w-3.5 h-3.5 lg:w-4 lg:h-4 transition-transform duration-200 ${productsOpen ? "rotate-180 text-amber-400" : ""
+                    }`}
                 />
               </button>
             </div>
 
             <NavLink to="/about" className={navLinkClass}>
               About
+            </NavLink>
+
+            <NavLink to="/services" className={navLinkClass}>
+              Services
+            </NavLink>
+
+            <NavLink to="/contact" className={navLinkClass}>
+              Contact
             </NavLink>
           </div>
 
@@ -113,11 +118,10 @@ export default function Navbar() {
           <div
             onMouseEnter={openDropdown}
             onMouseLeave={closeDropdown}
-            className={`pointer-events-auto w-48 lg:w-56 transition-all duration-200 ease-out ${
-              productsOpen
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-1.5 pointer-events-none"
-            }`}
+            className={`pointer-events-auto w-48 lg:w-56 transition-all duration-200 ease-out ${productsOpen
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-1.5 pointer-events-none"
+              }`}
           >
             <div className="bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-white/[0.09] shadow-[0_16px_40px_rgba(0,0,0,0.4)] p-1.5">
               {productItems.map((item) => (
@@ -135,11 +139,10 @@ export default function Navbar() {
 
         {/* ── Mobile Menu Panel ─────────────────────── */}
         <div
-          className={`absolute left-0 right-0 md:hidden z-0 transition-all duration-300 ease-in-out ${
-            mobileOpen
-              ? "opacity-100 translate-y-0 pointer-events-auto"
-              : "opacity-0 -translate-y-2 pointer-events-none"
-          }`}
+          className={`absolute left-0 right-0 md:hidden z-0 transition-all duration-300 ease-in-out ${mobileOpen
+            ? "opacity-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 -translate-y-2 pointer-events-none"
+            }`}
           style={{ top: "calc(3.75rem - 1rem)" }}
         >
           <div className="mx-2 pt-[1.35rem] pb-3 px-3 bg-slate-950/80 backdrop-blur-2xl rounded-b-[1.5rem] border border-white/[0.08] border-t-0 shadow-[0_12px_40px_rgba(0,0,0,0.3)] flex flex-col gap-0.5">
@@ -151,10 +154,9 @@ export default function Navbar() {
               end
               onClick={() => setMobileOpen(false)}
               className={({ isActive }) =>
-                `text-sm font-medium px-3 py-2.5 rounded-full transition-colors duration-100 ${
-                  isActive
-                    ? "text-white bg-white/10"
-                    : "text-slate-300 hover:text-white hover:bg-white/[0.07]"
+                `text-sm font-medium px-3 py-2.5 rounded-full transition-colors duration-100 ${isActive
+                  ? "text-white bg-white/10"
+                  : "text-slate-300 hover:text-white hover:bg-white/[0.07]"
                 }`
               }
             >
@@ -170,16 +172,14 @@ export default function Navbar() {
               >
                 <span>Products</span>
                 <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    mobileProductsOpen ? "rotate-180 text-amber-400" : ""
-                  }`}
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${mobileProductsOpen ? "rotate-180 text-amber-400" : ""
+                    }`}
                 />
               </button>
 
               <div
-                className={`overflow-hidden transition-all duration-200 ease-in-out ${
-                  mobileProductsOpen ? "max-h-48 opacity-100" : "max-h-0 opacity-0"
-                }`}
+                className={`overflow-hidden transition-all duration-200 ease-in-out ${mobileProductsOpen ? "max-h-48 opacity-100" : "max-h-0 opacity-0"
+                  }`}
               >
                 <div className="pt-0.5 pb-1 pl-3 flex flex-col gap-0.5">
                   {productItems.map((item) => (
@@ -199,10 +199,9 @@ export default function Navbar() {
               to="/about"
               onClick={() => setMobileOpen(false)}
               className={({ isActive }) =>
-                `text-sm font-medium px-3 py-2.5 rounded-full transition-colors duration-100 ${
-                  isActive
-                    ? "text-white bg-white/10"
-                    : "text-slate-300 hover:text-white hover:bg-white/[0.07]"
+                `text-sm font-medium px-3 py-2.5 rounded-full transition-colors duration-100 ${isActive
+                  ? "text-white bg-white/10"
+                  : "text-slate-300 hover:text-white hover:bg-white/[0.07]"
                 }`
               }
             >
