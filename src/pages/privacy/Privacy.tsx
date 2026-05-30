@@ -99,24 +99,6 @@ export default function Privacy() {
           ))}
         </div>
       </div>
-
-      {/* CTA Footer */}
-      <div className="w-full bg-neutral-950 text-white text-center px-6 py-14 sm:py-20">
-        <h2 className="font-serif text-2xl sm:text-4xl font-light mb-3">
-          Questions about your <span className="text-amber-400">data?</span>
-        </h2>
-        <p className="text-neutral-400 text-sm sm:text-base max-w-md mx-auto mb-8 leading-relaxed">
-          Reach out to our privacy team and we'll get back to you within 30 days.
-        </p>
-        <Link
-          to="/contact"
-          className="inline-flex items-center gap-2 rounded-full bg-amber-400 text-neutral-900 font-semibold text-sm px-8 py-3.5 hover:bg-amber-500 active:scale-[0.98] transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
-        >
-          Contact Us
-          <ChevronRight className="w-4 h-4" />
-        </Link>
-      </div>
-
     </div>
   );
 }
