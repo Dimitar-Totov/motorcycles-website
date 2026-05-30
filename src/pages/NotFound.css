@@ -1,0 +1,47 @@
+.digit-3d {
+  position: relative;
+  display: inline-block;
+  font-size: clamp(6rem, 20vw, 14rem);
+  font-weight: 900;
+  line-height: 1;
+  user-select: none;
+  color: transparent;
+}
+
+/* Front face – cyan-to-teal gradient */
+.digit-3d::before {
+  content: attr(data-digit);
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #40e0d0 0%, #00bcd4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  z-index: 2;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+/* Extruded side – dark teal staircase layers */
+.digit-3d::after {
+  content: attr(data-digit);
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  color: #006373;
+  text-shadow:
+    1px 1px 0 #005f6d,
+    2px 2px 0 #005a68,
+    3px 3px 0 #005563,
+    4px 4px 0 #00505e,
+    5px 5px 0 #004b59,
+    6px 6px 0 #004654,
+    7px 7px 0 #004150,
+    8px 8px 0 #003c4b,
+    9px 9px 6px rgba(0, 0, 0, 0.45);
+  transform: translate(3px, 3px);
+}
