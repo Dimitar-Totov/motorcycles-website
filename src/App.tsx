@@ -13,6 +13,7 @@ import Contact from "./pages/contact/Contact";
 import Auth from "./pages/auth/Auth";
 import Terms from "./pages/terms/Terms";
 import Privacy from "./pages/privacy/Privacy";
+import Profile from "./pages/profile/Profile";
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
       <Footer />
       <BackToTopButton />
