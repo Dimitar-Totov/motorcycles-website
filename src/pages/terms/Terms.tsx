@@ -1,5 +1,4 @@
-import { Link } from "react-router-dom";
-import { Shield, FileText, AlertCircle, Lock, RefreshCw, Mail, ChevronRight } from "lucide-react";
+import { Shield, FileText, AlertCircle, Lock, RefreshCw, Mail } from "lucide-react";
 
 const SECTIONS = [
   {
