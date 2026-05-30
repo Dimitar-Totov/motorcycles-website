@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import './NotFound.module.css';
+import './NotFound.css';
 
 const DIGITS = ['4', '0', '4'] as const;
 
