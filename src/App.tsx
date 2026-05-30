@@ -7,6 +7,7 @@ import BackToTopButton from "./components/BackToTopButton";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import About from "./pages/About";
+import Service from "./pages/services/Service";
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="*" element={<NotFound />} />
         <Route path="/about" element={<About />} />
+        <Route path="/services" element={<Service />} />
       </Routes>
       <Footer />
       <BackToTopButton />
