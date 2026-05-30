@@ -4,6 +4,7 @@ import { UserProvider } from "./context/UserContext";
 import Navbar from "./components/navbar/Navbar";
 import Footer from "./components/footer/Footer";
 import BackToTopButton from "./components/BackToTopButton";
+import AuthGuard from "./components/guard/AuthGuard";
 
 import Home from "./pages/home/Home";
 import NotFound from "./pages/not-found/NotFound";
@@ -15,7 +16,6 @@ import Terms from "./pages/terms/Terms";
 import Privacy from "./pages/privacy/Privacy";
 import Profile from "./pages/profile/Profile";
 
-
 function App() {
   return (
     <UserProvider>
@@ -26,10 +26,10 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Service />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/auth" element={<Auth />} />
+        <Route path="/auth" element={<AuthGuard require="guest" redirectTo="/profile"><Auth /></AuthGuard>} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<AuthGuard require="auth" redirectTo="/auth"><Profile /></AuthGuard>} />
       </Routes>
       <Footer />
       <BackToTopButton />
