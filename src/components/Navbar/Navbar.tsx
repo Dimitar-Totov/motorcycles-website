@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Menu, X, ChevronDown, Bike } from "lucide-react";
+import { useUser } from "../../context/UserContext";
 
 const productItems = [
   { label: "Sport Bikes", href: "#" },
@@ -10,6 +11,7 @@ const productItems = [
 ];
 
 export default function Navbar() {
+  const { user } = useUser();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
   const [productsOpen, setProductsOpen] = useState(false);
@@ -91,10 +93,10 @@ export default function Navbar() {
           {/* Right side */}
           <div className="flex items-center gap-2.5 lg:gap-3">
             <Link
-              to="/auth"
+              to={user ? "/profile" : "/auth"}
               className="hidden md:inline-flex items-center px-4 lg:px-6 py-1.5 lg:py-2 text-sm lg:text-base font-bold rounded-full bg-amber-500 text-slate-950 hover:bg-amber-400 active:scale-95 transition-all duration-150 shadow-[0_0_14px_rgba(245,158,11,0.3)] whitespace-nowrap"
             >
-              Sign In
+              {user ? "Profile" : "Sign In"}
             </Link>
 
             <button
@@ -210,10 +212,10 @@ export default function Navbar() {
 
             <div className="mt-2 pt-2 border-t border-white/[0.06]">
               <Link
-                to="/auth"
+                to={user ? "/profile" : "/auth"}
                 className="flex items-center justify-center px-4 py-2.5 text-sm font-bold rounded-full bg-amber-500 text-slate-950 hover:bg-amber-400 transition-colors duration-150"
               >
-                Sign In
+                {user ? "Profile" : "Sign In"}
               </Link>
             </div>
 

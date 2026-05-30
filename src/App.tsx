@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 
+import { UserProvider } from "./context/UserContext";
 import Navbar from "./components/navbar/Navbar";
 import Footer from "./components/footer/Footer";
 import BackToTopButton from "./components/BackToTopButton";
@@ -16,7 +17,7 @@ import Privacy from "./pages/privacy/Privacy";
 
 function App() {
   return (
-    <>
+    <UserProvider>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -30,7 +31,7 @@ function App() {
       </Routes>
       <Footer />
       <BackToTopButton />
-    </>
+    </UserProvider>
   );
 }
 

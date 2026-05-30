@@ -1,8 +1,35 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import loginImg from "../../assets/login.jpeg";
 import registerImg from "../../assets/register.jpg";
+import { useUser } from "../../context/UserContext";
+import { validateEmail, validatePassword } from "../../utils/validators";
+
+function friendlyError(err: unknown, mode: Mode): string {
+  const status = (err as { status?: number })?.status;
+  const msg = (err instanceof Error ? err.message : "").toLowerCase();
+
+  if (status === 429 || msg.includes("rate limit") || msg.includes("over_email_send_rate_limit"))
+    return "Too many attempts. Please wait a few minutes and try again.";
+  if (msg.includes("user already registered") || msg.includes("already been registered"))
+    return "An account with this email already exists.";
+  if (msg.includes("email not confirmed"))
+    return "Please confirm your email before signing in.";
+  if (msg.includes("password should be at least") || msg.includes("password is too short"))
+    return "Password must be at least 6 characters.";
+  if (msg.includes("unable to validate email address") || msg.includes("invalid email"))
+    return "Please enter a valid email address.";
+  if (msg.includes("invalid login credentials") || msg.includes("invalid email or password"))
+    return "Invalid email or password.";
+  if (msg === "failed to fetch" || msg.includes("networkerror") || msg.includes("network request failed"))
+    return "Connection error. Please check your internet and try again.";
+
+  if (status === 400 || status === 401)
+    return mode === "signin" ? "Invalid email or password." : "Registration failed. Please try again.";
+
+  return "Something went wrong. Please try again.";
+}
 
 type Mode = "signin" | "signup";
 
@@ -16,10 +43,13 @@ const FORM_GRADIENT = {
 };
 
 const INPUT_CLS =
-  "w-full rounded-full bg-white/80 border border-amber-100 px-5 py-3.5 " +
+  "w-full rounded-full bg-white/80 border px-5 py-3.5 " +
   "text-sm text-neutral-800 placeholder-neutral-400 " +
-  "focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-200 " +
+  "focus:outline-none focus:ring-2 focus:ring-amber-400/50 " +
   "transition duration-150";
+
+const inputCls = (invalid?: boolean) =>
+  `${INPUT_CLS} ${invalid ? "border-red-400 focus:ring-red-300" : "border-amber-100 focus:border-amber-200"}`;
 
 const LABEL_CLS = "block text-xs font-medium text-neutral-500 mb-1.5 ml-1";
 
@@ -126,9 +156,63 @@ interface FormPanelProps {
 
 function FormPanel({ mode, showPwd, onTogglePwd, showConfirmPwd, onToggleConfirmPwd, onSwitch }: FormPanelProps) {
   const isSignIn = mode === "signin";
+  const { login, register } = useUser();
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setSuccessMsg(null);
+
+    const errors: Record<string, boolean> = {};
+
+    if (!isSignIn && !fullName.trim()) errors.fullName = true;
+    if (validateEmail(email)) errors.email = true;
+    if (validatePassword(password)) errors.password = true;
+    if (!isSignIn && password !== confirmPassword) errors.confirmPassword = true;
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      if (errors.fullName) setError("Full name is required.");
+      else if (errors.email) setError(validateEmail(email));
+      else if (errors.password) setError(validatePassword(password));
+      else if (errors.confirmPassword) setError("Passwords do not match.");
+      return;
+    }
+
+    setFieldErrors({});
+
+    setIsLoading(true);
+    try {
+      if (isSignIn) {
+        await login(email, password);
+        navigate("/");
+      } else {
+        const { needsConfirmation } = await register(email, password, fullName);
+        if (needsConfirmation) {
+          setSuccessMsg("Check your email to confirm your account.");
+        } else {
+          navigate("/");
+        }
+      }
+    } catch (err: unknown) {
+      setError(friendlyError(err, mode));
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
-    <>
+    <form onSubmit={handleSubmit} noValidate>
       {/* Heading */}
       <div className="mb-10">
         <h2 className="font-serif text-[2.125rem] font-light text-neutral-800 tracking-tight leading-tight mb-2">
@@ -153,7 +237,10 @@ function FormPanel({ mode, showPwd, onTogglePwd, showConfirmPwd, onToggleConfirm
               type="text"
               placeholder="John Doe"
               autoComplete="name"
-              className={INPUT_CLS}
+              className={inputCls(fieldErrors.fullName)}
+              value={fullName}
+              onChange={(e) => { setFullName(e.target.value); setFieldErrors((p) => ({ ...p, fullName: false })); }}
+              required
             />
           </div>
         )}
@@ -167,7 +254,10 @@ function FormPanel({ mode, showPwd, onTogglePwd, showConfirmPwd, onToggleConfirm
             type="email"
             placeholder="you@example.com"
             autoComplete="email"
-            className={INPUT_CLS}
+            className={inputCls(fieldErrors.email)}
+            value={email}
+            onChange={(e) => { setEmail(e.target.value); setFieldErrors((p) => ({ ...p, email: false })); }}
+            required
           />
         </div>
 
@@ -181,7 +271,10 @@ function FormPanel({ mode, showPwd, onTogglePwd, showConfirmPwd, onToggleConfirm
               type={showPwd ? "text" : "password"}
               placeholder="••••••••"
               autoComplete={isSignIn ? "current-password" : "new-password"}
-              className={`${INPUT_CLS} pr-12`}
+              className={`${inputCls(fieldErrors.password)} pr-12`}
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); setFieldErrors((p) => ({ ...p, password: false })); }}
+              required
             />
             <button
               type="button"
@@ -209,7 +302,10 @@ function FormPanel({ mode, showPwd, onTogglePwd, showConfirmPwd, onToggleConfirm
                 type={showConfirmPwd ? "text" : "password"}
                 placeholder="••••••••"
                 autoComplete="new-password"
-                className={`${INPUT_CLS} pr-12`}
+                className={`${inputCls(fieldErrors.confirmPassword)} pr-12`}
+                value={confirmPassword}
+                onChange={(e) => { setConfirmPassword(e.target.value); setFieldErrors((p) => ({ ...p, confirmPassword: false })); }}
+                required
               />
               <button
                 type="button"
@@ -228,17 +324,30 @@ function FormPanel({ mode, showPwd, onTogglePwd, showConfirmPwd, onToggleConfirm
         )}
       </div>
 
+      {/* Error / success feedback */}
+      {error && (
+        <div className="mt-4 flex items-start gap-2.5 rounded-2xl bg-red-50 border border-red-100 px-4 py-3">
+          <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
+          <p className="text-xs text-red-600 leading-relaxed">{error}</p>
+        </div>
+      )}
+      {successMsg && (
+        <p className="mt-4 text-xs text-green-600 text-center">{successMsg}</p>
+      )}
+
       {/* Submit */}
       <button
         type="submit"
+        disabled={isLoading}
         className="
           mt-8 w-full py-3.5 rounded-full bg-amber-400 text-neutral-900
           font-semibold text-sm tracking-wide
           hover:bg-amber-500 active:scale-[0.98] transition-all duration-150
           focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2
+          disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100
         "
       >
-        Submit
+        {isLoading ? "Please wait…" : isSignIn ? "Sign in" : "Create account"}
       </button>
 
       {/* Spacer: flex-1 pins footer to bottom when card has a fixed height */}
@@ -278,6 +387,6 @@ function FormPanel({ mode, showPwd, onTogglePwd, showConfirmPwd, onToggleConfirm
           Terms & Conditions
         </NavLink>
       </div>
-    </>
+    </form>
   );
 }
