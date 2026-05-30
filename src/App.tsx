@@ -11,6 +11,7 @@ import Service from "./pages/services/Service";
 import Contact from "./pages/contact/Contact";
 import Auth from "./pages/auth/Auth";
 import Terms from "./pages/terms/Terms";
+import Privacy from "./pages/privacy/Privacy";
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
       </Routes>
       <Footer />
       <BackToTopButton />
