@@ -1,5 +1,32 @@
 @import "tailwindcss";
 
+/* ── Class-based dark mode for profile page ────────────────────── */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Custom keyframes ──────────────────────────────────────────── */
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+@keyframes pulseBadge {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50%      { box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
+}
+
+/* ── Full-page dark mode background ───────────────────────────── */
+html.dark,
+html.dark body {
+  background-color: rgb(24 24 27); /* zinc-900 */
+}
+
+/* ── Theme tokens ──────────────────────────────────────────────── */
+@theme {
+  --font-sans: Inter, system-ui, sans-serif;
+  --animate-fade-slide-in: fadeSlideIn 220ms ease-out both;
+  --animate-badge-pulse: pulseBadge 2s ease-in-out infinite;
+}
+
 /* ── Dual-handle range slider ────────────────────────────────── */
 .catalog-range {
   -webkit-appearance: none;

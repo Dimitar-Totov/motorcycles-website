@@ -1,57 +1,125 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { LogOut } from "lucide-react";
-import { useUser } from "../../context/UserContext";
+import { useState, useEffect, useLayoutEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Sun, Moon } from 'lucide-react'
+import { useUser } from '../../context/UserContext'
+import Sidebar from './Sidebar'
+import BottomNav from './BottomNav'
+import FavoritesTab from './tabs/Favorites'
+import CompareTab from './tabs/Compare'
+import AlertsTab from './tabs/Alerts'
+import RecentlyViewedTab from './tabs/RecentlyViewed'
+import MyListingsTab from './tabs/MyListings'
+import PreferencesTab from './tabs/Preferences'
+import StatsTab from './tabs/Stats'
+
+export type TabId =
+  | 'favorites'
+  | 'compare'
+  | 'alerts'
+  | 'recently-viewed'
+  | 'listings'
+  | 'preferences'
+  | 'stats'
+
+const TAB_TITLES: Record<TabId, string> = {
+  'favorites':       'Favorites',
+  'compare':         'Compare',
+  'alerts':          'Alerts',
+  'recently-viewed': 'Recently Viewed',
+  'listings':        'My Listings',
+  'preferences':     'Preferences',
+  'stats':           'Stats',
+}
 
 export default function Profile() {
-  const { user, logout } = useUser();
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const { user, logout } = useUser()
+  const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useState<TabId>('favorites')
+  const [darkMode, setDarkMode] = useState(
+    () => localStorage.getItem('profileDarkMode') === 'true'
+  )
+
+  // Apply .dark to <html> so the full viewport (including above the navbar) turns dark
+  useLayoutEffect(() => {
+    const html = document.documentElement
+    html.classList.toggle('dark', darkMode)
+    localStorage.setItem('profileDarkMode', String(darkMode))
+  }, [darkMode])
+
+  // Remove .dark when navigating away from the profile page
+  useEffect(() => {
+    return () => { document.documentElement.classList.remove('dark') }
+  }, [])
 
   async function handleLogout() {
-    setIsLoading(true);
-    try {
-      await logout();
-      navigate("/");
-    } finally {
-      setIsLoading(false);
-    }
+    await logout()
+    navigate('/')
+  }
+
+  const fullName = user?.user_metadata?.full_name as string | undefined
+  const userInitials = fullName
+    ? fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
+    : (user?.email?.[0].toUpperCase() ?? '?')
+  const userName = fullName ?? user?.email ?? 'Rider'
+  const memberSince = user?.created_at
+    ? new Date(user.created_at).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
+    : 'May 2024'
+
+  function toggleDark() {
+    setDarkMode(d => !d)
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4">
-      <div className="w-full max-w-sm rounded-3xl border border-neutral-100 shadow-[0_8px_40px_rgba(0,0,0,0.07)] p-8 flex flex-col items-center gap-6">
+    <div className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-sans min-h-screen">
 
-        {/* Avatar */}
-        <div className="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center text-3xl font-semibold text-amber-600 select-none">
-          {user?.email?.[0].toUpperCase() ?? "?"}
+        {/* Fixed left sidebar — hidden on mobile */}
+        <Sidebar
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          darkMode={darkMode}
+          onToggleDark={toggleDark}
+          userInitials={userInitials}
+          userName={userName}
+          memberSince={memberSince}
+          onLogout={handleLogout}
+        />
+
+        {/* Main area — offset by sidebar width on md/lg */}
+        <div className="md:pl-14 lg:pl-60 pb-16 md:pb-0">
+
+          {/* Section header bar */}
+          <div className="sticky top-0 z-30 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-4 md:px-6 lg:px-8 h-12 flex items-center justify-between">
+            <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              {TAB_TITLES[activeTab]}
+            </span>
+            <button
+              onClick={toggleDark}
+              aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              className="p-2 rounded-lg text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 outline-none"
+            >
+              {darkMode
+                ? <Sun className="w-4 h-4" />
+                : <Moon className="w-4 h-4" />
+              }
+            </button>
+          </div>
+
+          {/* Tab content — key re-mounts the div to trigger fade-slide-in */}
+          <div className="p-4 md:p-6 lg:p-8">
+            <div key={activeTab} className="animate-fade-slide-in">
+              {activeTab === 'favorites'       && <FavoritesTab />}
+              {activeTab === 'compare'         && <CompareTab />}
+              {activeTab === 'alerts'          && <AlertsTab />}
+              {activeTab === 'recently-viewed' && <RecentlyViewedTab />}
+              {activeTab === 'listings'        && <MyListingsTab />}
+              {activeTab === 'preferences'     && <PreferencesTab />}
+              {activeTab === 'stats'           && <StatsTab />}
+            </div>
+          </div>
         </div>
 
-        {/* Info */}
-        <div className="text-center">
-          <p className="text-lg font-semibold text-neutral-800">
-            {user?.user_metadata?.full_name ?? "Rider"}
-          </p>
-          <p className="text-sm text-neutral-400 mt-0.5">{user?.email}</p>
-        </div>
-
-        <div className="w-full h-px bg-neutral-100" />
-
-        {/* Logout */}
-        <button
-          onClick={handleLogout}
-          disabled={isLoading}
-          className="
-            w-full flex items-center justify-center gap-2 py-3 rounded-full
-            border border-red-100 bg-red-50 text-red-500 text-sm font-semibold
-            hover:bg-red-100 active:scale-[0.98] transition-all duration-150
-            disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100
-          "
-        >
-          <LogOut className="w-4 h-4" />
-          {isLoading ? "Signing out…" : "Sign out"}
-        </button>
+        {/* Bottom nav — mobile only */}
+        <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
-    </div>
-  );
+  )
 }
