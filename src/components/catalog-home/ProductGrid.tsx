@@ -1,5 +1,5 @@
 import type { Motorcycle } from './types';
-import ProductCard from './ProductCard';
+import MotorcycleCard from './MotorcycleCard';
 
 interface Props {
   motorcycles: Motorcycle[];
@@ -9,24 +9,70 @@ export default function ProductGrid({ motorcycles }: Props) {
   if (motorcycles.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4 text-3xl">
-          🏍️
+        <div
+          className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
+          style={{ background: '#EEECEA' }}
+        >
+          <span
+            style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontVariationSettings: '"opsz" 72',
+              fontSize: '22px',
+              lineHeight: 1,
+            }}
+          >
+            ø
+          </span>
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">No motorcycles found</h3>
-        <p className="text-sm text-gray-400">Try adjusting your filters to see more results.</p>
+        <h3
+          style={{
+            fontFamily: "'Fraunces', Georgia, serif",
+            fontVariationSettings: '"opsz" 72',
+            fontSize: '18px',
+            fontWeight: 500,
+            color: '#1a1a18',
+            marginBottom: '6px',
+          }}
+        >
+          No motorcycles found
+        </h3>
+        <p
+          style={{
+            fontFamily: "'DM Sans', system-ui, sans-serif",
+            fontSize: '13px',
+            color: '#6b6b68',
+          }}
+        >
+          Try adjusting your filters to see more results.
+        </p>
       </div>
     );
   }
 
   return (
     <div>
-      <p className="text-sm text-gray-500 mb-5">
-        <span className="font-semibold text-gray-900">{motorcycles.length}</span>{' '}
+      <p
+        className="mb-5"
+        style={{
+          fontFamily: "'DM Sans', system-ui, sans-serif",
+          fontSize: '13px',
+          color: '#6b6b68',
+        }}
+      >
+        <span style={{ fontWeight: 600, color: '#1a1a18' }}>{motorcycles.length}</span>{' '}
         {motorcycles.length === 1 ? 'motorcycle' : 'motorcycles'} found
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5">
+
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
+          gap: 'clamp(16px, 2.5vw, 24px)',
+          alignItems: 'start',
+        }}
+      >
         {motorcycles.map(moto => (
-          <ProductCard key={moto.id} motorcycle={moto} />
+          <MotorcycleCard key={moto.id} motorcycle={moto} />
         ))}
       </div>
     </div>

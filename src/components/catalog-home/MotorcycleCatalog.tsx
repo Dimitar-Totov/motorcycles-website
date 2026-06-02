@@ -56,10 +56,10 @@ export default function MotorcycleCatalog() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="bg-slate-50 w-full">
       {/* Mobile / tablet filter bar */}
       <div className="lg:hidden sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-gray-200/80">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="w-full px-4 py-3 flex items-center justify-between">
           <p className="text-sm text-gray-600">
             <span className="font-semibold text-gray-900">{filtered.length}</span> results
           </p>
@@ -79,7 +79,7 @@ export default function MotorcycleCatalog() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-7 items-start">
           {/* Desktop sticky sidebar */}
           <aside className="hidden lg:block w-72 xl:w-80 shrink-0 sticky top-28 self-start">

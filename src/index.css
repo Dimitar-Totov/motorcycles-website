@@ -22,7 +22,9 @@ html.dark body {
 
 /* ── Theme tokens ──────────────────────────────────────────────── */
 @theme {
-  --font-sans: Inter, system-ui, sans-serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
   --animate-fade-slide-in: fadeSlideIn 220ms ease-out both;
   --animate-badge-pulse: pulseBadge 2s ease-in-out infinite;
 }
