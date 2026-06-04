@@ -77,6 +77,12 @@ export default function Navbar() {
               </button>
             </div>
 
+            {user && (
+              <NavLink to="/create-product" className={navLinkClass}>
+                Create Product
+              </NavLink>
+            )}
+
             <NavLink to="/about" className={navLinkClass}>
               About
             </NavLink>
@@ -197,6 +203,21 @@ export default function Navbar() {
               </div>
             </div>
 
+            {user && (
+              <NavLink
+                to="/create-product"
+                onClick={() => setMobileOpen(false)}
+                className={({ isActive }) =>
+                  `text-sm font-medium px-3 py-2.5 rounded-full transition-colors duration-100 ${isActive
+                    ? "text-white bg-white/10"
+                    : "text-slate-300 hover:text-white hover:bg-white/[0.07]"
+                  }`
+                }
+              >
+                Create Product
+              </NavLink>
+            )}
+
             <NavLink
               to="/about"
               onClick={() => setMobileOpen(false)}
@@ -208,6 +229,32 @@ export default function Navbar() {
               }
             >
               About
+            </NavLink>
+
+            <NavLink
+              to="/services"
+              onClick={() => setMobileOpen(false)}
+              className={({ isActive }) =>
+                `text-sm font-medium px-3 py-2.5 rounded-full transition-colors duration-100 ${isActive
+                  ? "text-white bg-white/10"
+                  : "text-slate-300 hover:text-white hover:bg-white/[0.07]"
+                }`
+              }
+            >
+              Services
+            </NavLink>
+
+            <NavLink
+              to="/contact"
+              onClick={() => setMobileOpen(false)}
+              className={({ isActive }) =>
+                `text-sm font-medium px-3 py-2.5 rounded-full transition-colors duration-100 ${isActive
+                  ? "text-white bg-white/10"
+                  : "text-slate-300 hover:text-white hover:bg-white/[0.07]"
+                }`
+              }
+            >
+              Contact
             </NavLink>
 
             <div className="mt-2 pt-2 border-t border-white/[0.06]">

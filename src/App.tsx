@@ -15,6 +15,7 @@ import Auth from "./pages/auth/Auth";
 import Terms from "./pages/terms/Terms";
 import Privacy from "./pages/privacy/Privacy";
 import Profile from "./pages/profile/Profile";
+import CreateProduct from "./pages/create-product/CreateProduct";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/profile" element={<AuthGuard require="auth" redirectTo="/auth"><Profile /></AuthGuard>} />
+        <Route path="/create-product" element={<AuthGuard require="auth" redirectTo="/auth"><CreateProduct /></AuthGuard>} />
       </Routes>
       <Footer />
       <BackToTopButton />
