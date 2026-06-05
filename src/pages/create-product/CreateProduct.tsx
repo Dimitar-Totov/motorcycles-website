@@ -4,6 +4,8 @@ import type { LicenseCategory, SilhouetteCategory } from '../../components/catal
 import { supabase } from '../../lib/supabaseClient';
 import { useUser } from '../../context/UserContext';
 import { uid } from '../../utils/uid';
+import { validateProductForm } from '../../utils/validators';
+import type { FieldErrors, ProductForm } from '../../types/create-product';
 import styles from './CreateProduct.module.css';
 
 const BUCKET = 'motorcycle-photos';
@@ -16,32 +18,6 @@ interface PhotoFile {
   preview: string;
 }
 
-interface ProductForm {
-  name: string;
-  model: string;
-  brand: string;
-  year: string;
-  color: string;
-  powerKw: string;
-  engine: string;
-  price: string;
-  inStock: boolean;
-  licenseCategories: LicenseCategory[];
-  silhouetteCategory: SilhouetteCategory | '';
-}
-
-interface FieldErrors {
-  name?: string;
-  model?: string;
-  brand?: string;
-  year?: string;
-  color?: string;
-  powerKw?: string;
-  engine?: string;
-  price?: string;
-
-  silhouetteCategory?: string;
-}
 
 const SILHOUETTE_OPTIONS: SilhouetteCategory[] = [
   'naked', 'sport', 'adventure', 'scrambler', 'electric', 'cruiser',
@@ -73,27 +49,6 @@ const labelClass =
   'block text-white/80 text-sm font-semibold uppercase tracking-wider mb-1.5';
 
 const errorClass = 'text-red-400 text-xs mt-1 flex items-center gap-1';
-
-function validate(form: ProductForm): FieldErrors {
-  const errors: FieldErrors = {};
-  if (!form.name.trim()) errors.name = 'Name is required.';
-  if (!form.model.trim()) errors.model = 'Model is required.';
-  if (!form.brand.trim()) errors.brand = 'Brand is required.';
-  const year = Number(form.year);
-  if (!form.year || isNaN(year) || year < 1900 || year > CURRENT_YEAR + 1)
-    errors.year = `Year must be between 1900 and ${CURRENT_YEAR + 1}.`;
-  if (!form.color.trim()) errors.color = 'Color is required.';
-  const power = Number(form.powerKw);
-  if (!form.powerKw || isNaN(power) || power <= 0)
-    errors.powerKw = 'Power must be a positive number.';
-  if (!form.engine.trim()) errors.engine = 'Engine is required.';
-  const price = Number(form.price);
-  if (!form.price || isNaN(price) || price <= 0)
-    errors.price = 'Price must be a positive number.';
-  if (!form.silhouetteCategory)
-    errors.silhouetteCategory = 'Please select a category.';
-  return errors;
-}
 
 export default function CreateProduct() {
   const { user } = useUser();
@@ -178,7 +133,7 @@ export default function CreateProduct() {
       return;
     }
 
-    const errors = validate(form);
+const errors = validateProductForm(form);
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
