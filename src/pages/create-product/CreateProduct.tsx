@@ -208,7 +208,7 @@ const errors = validateProductForm(form);
         <div className={`reveal-item${visible ? ' is-visible' : ''} text-center`}>
           <CheckCircle className="w-16 h-16 text-amber-400 mx-auto mb-4" strokeWidth={1.5} />
           <h2 className="text-3xl font-bold text-white font-serif mb-2">Listing Created!</h2>
-          <p className="text-white/60 mb-8">Your motorcycle listing has been submitted successfully.</p>
+          <p className="!text-amber-400 font-semibold mb-8">Your motorcycle listing has been submitted successfully.</p>
           <button
             onClick={handleReset}
             className="bg-amber-400 text-gray-900 font-semibold uppercase tracking-widest px-8 py-3 rounded-lg hover:bg-amber-300 transition-colors duration-200"
