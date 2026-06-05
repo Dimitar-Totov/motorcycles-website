@@ -1,4 +1,4 @@
-import type { ProductForm, FieldErrors } from '../types/create-product';
+import type { ProductForm, FieldErrors } from '../types/types';
 
 export function validateEmail(email: string): string | null {
   if (!email.trim()) return "Email is required.";

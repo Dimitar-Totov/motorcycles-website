@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import { Toaster } from "sonner";
 
 import { UserProvider } from "./context/UserContext";
 import Navbar from "./components/navbar/Navbar";
@@ -20,6 +21,19 @@ import CreateProduct from "./pages/create-product/CreateProduct";
 function App() {
   return (
     <UserProvider>
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        duration={4000}
+        theme="system"
+        toastOptions={{
+          style: {
+            borderRadius: '10px',
+            fontSize: '14px',
+          },
+        }}
+      />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />

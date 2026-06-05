@@ -1,11 +1,17 @@
 import { useState, useEffect, useRef, useCallback, type FormEvent, type ChangeEvent, type DragEvent } from 'react';
-import { AlertCircle, CheckCircle, ImagePlus, X } from 'lucide-react';
-import type { LicenseCategory, SilhouetteCategory } from '../../components/catalog-home/types';
+
 import { supabase } from '../../lib/supabaseClient';
+
+import { toast } from 'sonner';
+import { AlertCircle, CheckCircle, ImagePlus, X } from 'lucide-react';
+
 import { useUser } from '../../context/UserContext';
 import { uid } from '../../utils/uid';
 import { validateProductForm } from '../../utils/validators';
-import type { FieldErrors, ProductForm } from '../../types/create-product';
+import type { FieldErrors, ProductForm } from '../../types/types';
+
+import type { LicenseCategory, SilhouetteCategory } from '../../components/catalog-home/types';
+
 import styles from './CreateProduct.module.css';
 
 const BUCKET = 'motorcycle-photos';
@@ -57,7 +63,6 @@ export default function CreateProduct() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const [photos, setPhotos] = useState<PhotoFile[]>([]);
   const [dragging, setDragging] = useState(false);
@@ -77,9 +82,7 @@ export default function CreateProduct() {
     const arr = Array.from(files);
     const valid = arr.filter(f => ACCEPTED.includes(f.type));
     if (valid.length < arr.length) {
-      setUploadError('Only JPEG, PNG, WebP, and AVIF images are accepted.');
-    } else {
-      setUploadError(null);
+      toast.error('Only JPEG, PNG, WebP, and AVIF images are accepted.');
     }
     setPhotos(prev => {
       const remaining = MAX_FILES - prev.length;
@@ -129,7 +132,7 @@ export default function CreateProduct() {
     e.preventDefault();
 
     if (photos.length < 2) {
-      setUploadError('Please upload at least 2 photos before submitting.');
+      toast.error('Please upload at least 2 photos before submitting.');
       return;
     }
 
@@ -140,7 +143,6 @@ const errors = validateProductForm(form);
     }
 
     setLoading(true);
-    setUploadError(null);
 
     // Generate a product ID upfront so photos live under {productId}/filename
     const productId = crypto.randomUUID();
@@ -155,7 +157,7 @@ const errors = validateProductForm(form);
         .upload(path, photo.file, { contentType: photo.file.type, upsert: false });
 
       if (error) {
-        setUploadError(`Photo upload failed: ${error.message}`);
+        toast.error(`Photo upload failed: ${error.message}`);
         setLoading(false);
         return;
       }
@@ -183,7 +185,7 @@ const errors = validateProductForm(form);
     });
 
     if (insertError) {
-      setUploadError(`Failed to save listing: ${insertError.message}`);
+      toast.error(`Failed to save listing: ${insertError.message}`);
       setLoading(false);
       return;
     }
@@ -197,7 +199,6 @@ const errors = validateProductForm(form);
     setPhotos([]);
     setForm(emptyForm);
     setFieldErrors({});
-    setUploadError(null);
     setSubmitted(false);
   };
 
@@ -463,10 +464,6 @@ const errors = validateProductForm(form);
               className="hidden"
               onChange={e => { if (e.target.files) addFiles(e.target.files); e.target.value = ''; }}
             />
-
-            {uploadError && (
-              <p className={`${errorClass} mt-2`}><AlertCircle className="w-3 h-3" />{uploadError}</p>
-            )}
 
             {/* Preview grid */}
             {photos.length > 0 && (
