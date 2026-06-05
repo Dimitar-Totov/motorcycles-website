@@ -3,6 +3,7 @@ import { AlertCircle, CheckCircle, ImagePlus, X } from 'lucide-react';
 import type { LicenseCategory, SilhouetteCategory } from '../../components/catalog-home/types';
 import { supabase } from '../../lib/supabaseClient';
 import { useUser } from '../../context/UserContext';
+import { uid } from '../../utils/uid';
 import styles from './CreateProduct.module.css';
 
 const BUCKET = 'motorcycle-photos';
@@ -92,10 +93,6 @@ function validate(form: ProductForm): FieldErrors {
   if (!form.silhouetteCategory)
     errors.silhouetteCategory = 'Please select a category.';
   return errors;
-}
-
-function uid() {
-  return Math.random().toString(36).slice(2, 10);
 }
 
 export default function CreateProduct() {
