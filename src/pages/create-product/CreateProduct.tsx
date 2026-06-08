@@ -120,12 +120,25 @@ export default function CreateProduct() {
   };
 
   const toggleLicense = (cat: LicenseCategory) => {
-    setForm(f => ({
-      ...f,
-      licenseCategories: f.licenseCategories.includes(cat)
-        ? f.licenseCategories.filter(c => c !== cat)
-        : [...f.licenseCategories, cat],
-    }));
+    setForm(f => {
+      const current = f.licenseCategories;
+      const isActive = current.includes(cat);
+
+      let next: LicenseCategory[];
+      if (isActive) {
+        // Deselecting A also removes A1 and A2; deselecting A2 also removes A1
+        if (cat === 'A') next = current.filter(c => c !== 'A' && c !== 'A1' && c !== 'A2');
+        else if (cat === 'A2') next = current.filter(c => c !== 'A2' && c !== 'A1');
+        else next = current.filter(c => c !== cat);
+      } else {
+        // Selecting A adds A1 and A2; selecting A2 adds A1
+        if (cat === 'A') next = [...new Set<LicenseCategory>([...current, 'A', 'A1', 'A2'])];
+        else if (cat === 'A2') next = [...new Set<LicenseCategory>([...current, 'A2', 'A1'])];
+        else next = [...current, cat];
+      }
+
+      return { ...f, licenseCategories: next };
+    });
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -136,7 +149,12 @@ export default function CreateProduct() {
       return;
     }
 
-const errors = validateProductForm(form);
+    if (form.licenseCategories.length === 0) {
+      toast.error('Please select at least one license category.');
+      return;
+    }
+
+    const errors = validateProductForm(form);
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
