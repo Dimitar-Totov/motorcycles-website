@@ -2,8 +2,10 @@ import { useState, useEffect, type FormEvent } from 'react';
 import { MapPin, Phone, Printer, Mail } from 'lucide-react';
 import contactImg from '../../assets/contact.jpg';
 
-const MAPS_URL =
-  'https://www.google.com/maps/search/?api=1&query=123+Moto+Street+Sofia+Bulgaria';
+const DESTINATION_LAT = 42.6977;
+const DESTINATION_LNG = 23.3219;
+
+const MAPS_URL = `https://www.google.com/maps/dir/?api=1&destination=${DESTINATION_LAT},${DESTINATION_LNG}`;
 
 const cards = [
   {
@@ -12,7 +14,7 @@ const cards = [
     lines: ['123 Moto Street', 'Sofia, Bulgaria'],
     extra: null as string | null,
     email: null as string | null,
-    mapsUrl: MAPS_URL,
+    hasDirections: true,
   },
   {
     Icon: Phone,
@@ -20,7 +22,7 @@ const cards = [
     lines: ['+359 000 000 000'],
     extra: 'Toll-Free: 0800 000 123',
     email: null as string | null,
-    mapsUrl: null as string | null,
+    hasDirections: false,
   },
   {
     Icon: Printer,
@@ -28,7 +30,7 @@ const cards = [
     lines: ['+359 000 000 001'],
     extra: null as string | null,
     email: null as string | null,
-    mapsUrl: null as string | null,
+    hasDirections: false,
   },
   {
     Icon: Mail,
@@ -36,7 +38,7 @@ const cards = [
     lines: [] as string[],
     extra: null as string | null,
     email: 'info@yourdomain.com',
-    mapsUrl: null as string | null,
+    hasDirections: false,
   },
 ];
 
@@ -50,7 +52,6 @@ export default function Contact() {
   const [visible, setVisible] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ email: '', name: '', message: '' });
-
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 50);
     return () => clearTimeout(t);
@@ -68,13 +69,11 @@ export default function Contact() {
       <section className="pt-10 pb-10">
         <div className="max-w-6xl mx-auto px-6 md:px-16">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {cards.map(({ Icon, label, lines, extra, email, mapsUrl }, i) => (
+            {cards.map(({ Icon, label, lines, extra, email, hasDirections }, i) => (
               <div
                 key={label}
-                className={`reveal-item${visible ? ' is-visible' : ''} bg-white rounded-xl p-6 text-center shadow-md${mapsUrl ? ' cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200' : ''}`}
+                className={`reveal-item${visible ? ' is-visible' : ''} bg-white rounded-xl p-6 text-center shadow-md`}
                 style={{ transitionDelay: `${i * 0.1}s` }}
-                onClick={mapsUrl ? () => window.open(mapsUrl, '_blank', 'noopener,noreferrer') : undefined}
-                role={mapsUrl ? 'link' : undefined}
               >
                 <div className="flex justify-center mb-4">
                   <Icon
@@ -101,6 +100,16 @@ export default function Contact() {
                       className="text-amber-600 text-sm hover:underline break-all"
                     >
                       {email}
+                    </a>
+                  )}
+                  {hasDirections && (
+                    <a
+                      href={MAPS_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-amber-600 text-sm hover:underline mt-1"
+                    >
+                      View on Google Maps
                     </a>
                   )}
                 </div>
