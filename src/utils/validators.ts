@@ -1,4 +1,4 @@
-import type { ProductForm, FieldErrors } from '../types/types';
+import type { ProductForm } from '../types/types';
 
 export function validateEmail(email: string): string | null {
   if (!email.trim()) return "Email is required.";
@@ -14,23 +14,25 @@ export function validatePassword(password: string): string | null {
   return null;
 }
 
-export function validateProductForm(form: ProductForm): FieldErrors {
-  const errors: FieldErrors = {};
-  if (!form.name.trim()) errors.name = 'Name is required.';
-  if (!form.model.trim()) errors.model = 'Model is required.';
-  if (!form.brand.trim()) errors.brand = 'Brand is required.';
+export function validateProductForm(form: ProductForm): string[] {
+  const errors: string[] = [];
+  if (!form.name.trim()) errors.push('Name is required.');
+  if (!form.model.trim()) errors.push('Model is required.');
+  if (!form.brand.trim()) errors.push('Brand is required.');
   const year = Number(form.year);
   if (!form.year || Number.isNaN(year) || year < 1900 || year > new Date().getFullYear() + 1)
-    errors.year = `Year must be between 1900 and ${new Date().getFullYear() + 1}.`;
-  if (!form.color.trim()) errors.color = 'Color is required.';
+    errors.push(`Year must be between 1900 and ${new Date().getFullYear() + 1}.`);
+  if (!form.color.trim()) errors.push('Color is required.');
   const power = Number(form.powerKw);
   if (!form.powerKw || Number.isNaN(power) || power <= 0)
-    errors.powerKw = 'Power must be a positive number.';
-  if (!form.engine.trim()) errors.engine = 'Engine is required.';
+    errors.push('Power must be a positive number.');
+  if (!form.engine.trim()) errors.push('Engine is required.');
   const price = Number(form.price);
   if (!form.price || Number.isNaN(price) || price <= 0)
-    errors.price = 'Price must be a positive number.';
+    errors.push('Price must be a positive number.');
   if (!form.silhouetteCategory)
-    errors.silhouetteCategory = 'Please select a category.';
+    errors.push('Please select a category.');
+  if (form.licenseCategories.length === 0)
+    errors.push('Please select at least one license category.');
   return errors;
 }

@@ -13,15 +13,3 @@ export interface ProductForm {
   licenseCategories: LicenseCategory[];
   silhouetteCategory: SilhouetteCategory | '';
 }
-
-export interface FieldErrors {
-  name?: string;
-  model?: string;
-  brand?: string;
-  year?: string;
-  color?: string;
-  powerKw?: string;
-  engine?: string;
-  price?: string;
-  silhouetteCategory?: string;
-}

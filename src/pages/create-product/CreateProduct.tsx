@@ -3,12 +3,12 @@ import { useState, useEffect, useRef, useCallback, type FormEvent, type ChangeEv
 import { supabase } from '../../lib/supabaseClient';
 
 import { toast } from 'sonner';
-import { AlertCircle, CheckCircle, ImagePlus, X } from 'lucide-react';
+import { CheckCircle, ImagePlus, X } from 'lucide-react';
 
 import { useUser } from '../../context/UserContext';
 import { uid } from '../../utils/uid';
 import { validateProductForm } from '../../utils/validators';
-import type { FieldErrors, ProductForm } from '../../types/types';
+import type { ProductForm } from '../../types/types';
 
 import type { LicenseCategory, SilhouetteCategory } from '../../components/catalog-home/types';
 
@@ -54,13 +54,10 @@ const inputClass =
 const labelClass =
   'block text-white/80 text-sm font-semibold uppercase tracking-wider mb-1.5';
 
-const errorClass = 'text-red-400 text-xs mt-1 flex items-center gap-1';
-
 export default function CreateProduct() {
   const { user } = useUser();
   const [visible, setVisible] = useState(false);
   const [form, setForm] = useState<ProductForm>(emptyForm);
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -114,9 +111,6 @@ export default function CreateProduct() {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
     setForm(f => ({ ...f, [name]: type === 'checkbox' ? checked : value }));
-    if (fieldErrors[name as keyof FieldErrors]) {
-      setFieldErrors(prev => ({ ...prev, [name]: undefined }));
-    }
   };
 
   const toggleLicense = (cat: LicenseCategory) => {
@@ -149,14 +143,9 @@ export default function CreateProduct() {
       return;
     }
 
-    if (form.licenseCategories.length === 0) {
-      toast.error('Please select at least one license category.');
-      return;
-    }
-
     const errors = validateProductForm(form);
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
+    if (errors.length > 0) {
+      errors.forEach(msg => toast.error(msg));
       return;
     }
 
@@ -216,7 +205,6 @@ export default function CreateProduct() {
     photos.forEach(p => URL.revokeObjectURL(p.preview));
     setPhotos([]);
     setForm(emptyForm);
-    setFieldErrors({});
     setSubmitted(false);
   };
 
@@ -264,11 +252,8 @@ export default function CreateProduct() {
                 placeholder="e.g. CF 700 CL-X"
                 value={form.name}
                 onChange={handleChange}
-                className={`${inputClass}${fieldErrors.name ? ' border-red-500' : ''}`}
+                className={inputClass}
               />
-              {fieldErrors.name && (
-                <p className={errorClass}><AlertCircle className="w-3 h-3" />{fieldErrors.name}</p>
-              )}
             </div>
             <div>
               <label className={labelClass}>Model</label>
@@ -278,11 +263,8 @@ export default function CreateProduct() {
                 placeholder="e.g. CL-X"
                 value={form.model}
                 onChange={handleChange}
-                className={`${inputClass}${fieldErrors.model ? ' border-red-500' : ''}`}
+                className={inputClass}
               />
-              {fieldErrors.model && (
-                <p className={errorClass}><AlertCircle className="w-3 h-3" />{fieldErrors.model}</p>
-              )}
             </div>
           </div>
 
@@ -296,11 +278,8 @@ export default function CreateProduct() {
                 placeholder="e.g. CFMOTO"
                 value={form.brand}
                 onChange={handleChange}
-                className={`${inputClass}${fieldErrors.brand ? ' border-red-500' : ''}`}
+                className={inputClass}
               />
-              {fieldErrors.brand && (
-                <p className={errorClass}><AlertCircle className="w-3 h-3" />{fieldErrors.brand}</p>
-              )}
             </div>
             <div>
               <label className={labelClass}>Year</label>
@@ -312,11 +291,8 @@ export default function CreateProduct() {
                 max={CURRENT_YEAR + 1}
                 value={form.year}
                 onChange={handleChange}
-                className={`${inputClass}${fieldErrors.year ? ' border-red-500' : ''}`}
+                className={inputClass}
               />
-              {fieldErrors.year && (
-                <p className={errorClass}><AlertCircle className="w-3 h-3" />{fieldErrors.year}</p>
-              )}
             </div>
           </div>
 
@@ -330,11 +306,8 @@ export default function CreateProduct() {
                 placeholder="e.g. Midnight Black"
                 value={form.color}
                 onChange={handleChange}
-                className={`${inputClass}${fieldErrors.color ? ' border-red-500' : ''}`}
+                className={inputClass}
               />
-              {fieldErrors.color && (
-                <p className={errorClass}><AlertCircle className="w-3 h-3" />{fieldErrors.color}</p>
-              )}
             </div>
             <div>
               <label className={labelClass}>Engine</label>
@@ -344,11 +317,8 @@ export default function CreateProduct() {
                 placeholder="e.g. 693cc Parallel Twin"
                 value={form.engine}
                 onChange={handleChange}
-                className={`${inputClass}${fieldErrors.engine ? ' border-red-500' : ''}`}
+                className={inputClass}
               />
-              {fieldErrors.engine && (
-                <p className={errorClass}><AlertCircle className="w-3 h-3" />{fieldErrors.engine}</p>
-              )}
             </div>
           </div>
 
@@ -363,11 +333,8 @@ export default function CreateProduct() {
                 min={1}
                 value={form.powerKw}
                 onChange={handleChange}
-                className={`${inputClass}${fieldErrors.powerKw ? ' border-red-500' : ''}`}
+                className={inputClass}
               />
-              {fieldErrors.powerKw && (
-                <p className={errorClass}><AlertCircle className="w-3 h-3" />{fieldErrors.powerKw}</p>
-              )}
             </div>
             <div>
               <label className={labelClass}>Price (€)</label>
@@ -378,11 +345,8 @@ export default function CreateProduct() {
                 min={1}
                 value={form.price}
                 onChange={handleChange}
-                className={`${inputClass}${fieldErrors.price ? ' border-red-500' : ''}`}
+                className={inputClass}
               />
-              {fieldErrors.price && (
-                <p className={errorClass}><AlertCircle className="w-3 h-3" />{fieldErrors.price}</p>
-              )}
             </div>
           </div>
 
@@ -393,7 +357,7 @@ export default function CreateProduct() {
               name="silhouetteCategory"
               value={form.silhouetteCategory}
               onChange={handleChange}
-              className={`${inputClass}${fieldErrors.silhouetteCategory ? ' border-red-500' : ''} cursor-pointer`}
+              className={`${inputClass} cursor-pointer`}
             >
               <option value="" disabled className="bg-gray-900">Select a category</option>
               {SILHOUETTE_OPTIONS.map(opt => (
@@ -402,9 +366,6 @@ export default function CreateProduct() {
                 </option>
               ))}
             </select>
-            {fieldErrors.silhouetteCategory && (
-              <p className={errorClass}><AlertCircle className="w-3 h-3" />{fieldErrors.silhouetteCategory}</p>
-            )}
           </div>
 
           {/* License Categories */}
