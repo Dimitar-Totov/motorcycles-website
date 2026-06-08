@@ -166,10 +166,6 @@ export default function Sidebar({
         <div className="hidden lg:block min-w-0">
           <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">{userName}</div>
           <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Since {memberSince}</div>
-          <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-400 font-medium mt-1">
-            <ShieldCheck className="w-2.5 h-2.5" />
-            Verified
-          </span>
         </div>
       </div>
 
