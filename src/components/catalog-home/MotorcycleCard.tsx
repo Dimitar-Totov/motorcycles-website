@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { Motorcycle } from './types';
 import { MotorcycleSilhouette } from './Silhouettes';
 import { Hash } from 'lucide-react';
@@ -26,7 +27,11 @@ export default function MotorcycleCard({ motorcycle: m }: Props) {
   const yearShort = `'${String(m.year).slice(-2)}`;
 
   return (
-    <article className={`moto-card${m.inStock ? '' : ' moto-card--oos'}`}>
+    <Link
+      href={`/catalog/${m.id}/details`}
+      className={`moto-card${m.inStock ? '' : ' moto-card--oos'}`}
+      style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
+    >
       {/* ── Header: dark gradient brand zone ── */}
       <div className="moto-card__header" style={{ background: m.brandGradient }}>
         <div className="moto-card__status">
@@ -63,10 +68,12 @@ export default function MotorcycleCard({ motorcycle: m }: Props) {
           {m.brand.toUpperCase()} {m.model}
         </h3>
 
-        <div className="moto-card__matriculate">
-          <Hash className="moto-card__meta-icon" aria-hidden="true" />
-          <span>{m.matriculate}</span>
-        </div>
+        {m.matriculate && (
+          <div className="moto-card__matriculate">
+            <Hash className="moto-card__meta-icon" aria-hidden="true" />
+            <span>{m.matriculate}</span>
+          </div>
+        )}
 
         <p className="moto-card__specs">{m.year}&thinsp;·&thinsp;{m.engine}</p>
 
@@ -75,6 +82,6 @@ export default function MotorcycleCard({ motorcycle: m }: Props) {
           <span className="moto-card__price">{formatPrice(m.price)}</span>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }

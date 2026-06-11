@@ -1,7 +1,9 @@
+'use client';
+
 import { useState, useMemo } from 'react';
 import { SlidersHorizontal, X } from 'lucide-react';
-import type { FilterState } from './types';
-import { motorcycles, POWER_MIN, POWER_MAX } from './mockData';
+import type { FilterState, Motorcycle } from './types';
+import { POWER_MIN, POWER_MAX } from './mockData';
 import FilterSidebar from './FilterSidebar';
 import ProductGrid from './ProductGrid';
 
@@ -13,7 +15,12 @@ const initialFilters: FilterState = {
   powerMax: POWER_MAX,
 };
 
-export default function MotorcycleCatalog() {
+interface Props {
+  /** Listings fetched on the server (Home page) and filtered here on the client. */
+  motorcycles: Motorcycle[];
+}
+
+export default function MotorcycleCatalog({ motorcycles }: Props) {
   const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -39,7 +46,7 @@ export default function MotorcycleCatalog() {
         if (m.powerKw < filters.powerMin || m.powerKw > filters.powerMax) return false;
         return true;
       }),
-    [filters]
+    [filters, motorcycles]
   );
 
   const clearAll = () => setFilters(initialFilters);

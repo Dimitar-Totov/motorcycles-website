@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useRef, useState } from 'react';
 import heroImage from '../assets/hero-image.webp';
 
@@ -64,7 +66,7 @@ export default function AboutSection() {
             {...revealProps(isVisible, 800, 'rounded-2xl overflow-hidden shadow-xl')}
           >
             <img
-              src={heroImage}
+              src={heroImage.src}
               alt="Motorcycle on an open road"
               className="w-full h-full object-cover lg:min-h-[420px] lg:max-h-[560px]"
               loading="lazy"

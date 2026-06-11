@@ -1,5 +1,7 @@
+'use client';
+
 import { useEffect, useRef, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
 import yamahaLogo        from '../assets/brands/yamaha.png';
@@ -194,8 +196,8 @@ export default function BrandsGrid() {
                   Keeping them on separate elements avoids conflicting transform
                   transitions between the entrance slide and the hover lift.
                 */}
-                <NavLink
-                  to={`/catalog?brand=${brand.slug}`}
+                <Link
+                  href="/catalog"
                   aria-label={`Browse ${brand.name} motorcycles`}
                   style={{
                     display: 'flex',
@@ -230,7 +232,7 @@ export default function BrandsGrid() {
                   onBlur={() => setHoveredIdx(null)}
                 >
                   <img
-                    src={brand.logoSrc}
+                    src={brand.logoSrc.src}
                     alt={`${brand.name} logo`}
                     style={{
                       width: '62%',
@@ -284,7 +286,7 @@ export default function BrandsGrid() {
                   >
                     {brand.name} · {brand.count} bikes
                   </div>
-                </NavLink>
+                </Link>
               </div>
             );
           })}
@@ -299,8 +301,8 @@ export default function BrandsGrid() {
             marginTop: '48px',
           }}
         >
-          <NavLink
-            to="/catalog"
+          <Link
+            href="/catalog"
             aria-label="Browse all motorcycle brands in our catalog"
             style={{
               display: 'inline-flex',
@@ -331,7 +333,7 @@ export default function BrandsGrid() {
           >
             Browse All Brands
             <ArrowRight size={16} strokeWidth={1.5} />
-          </NavLink>
+          </Link>
         </div>
       </div>
 

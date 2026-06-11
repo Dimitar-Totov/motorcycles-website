@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import type { SilhouetteCategory } from './types';
 
 function NakedSilhouette() {
@@ -109,7 +110,7 @@ function CruiserSilhouette() {
   );
 }
 
-const SILHOUETTE_MAP: Record<SilhouetteCategory, () => JSX.Element> = {
+const SILHOUETTE_MAP: Record<SilhouetteCategory, () => ReactElement> = {
   naked:     NakedSilhouette,
   sport:     SportSilhouette,
   adventure: AdventureSilhouette,

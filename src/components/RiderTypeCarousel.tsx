@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -272,7 +274,7 @@ export default function RiderTypeCarousel() {
                 >
                   {/* Image */}
                   <img
-                    src={card.image}
+                    src={card.image.src}
                     alt={card.alt}
                     loading="lazy"
                     style={{
