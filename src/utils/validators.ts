@@ -34,5 +34,7 @@ export function validateProductForm(form: ProductForm): string[] {
     errors.push('Please select a category.');
   if (form.licenseCategories.length === 0)
     errors.push('Please select at least one license category.');
+  if (!form.phone || !form.phone.trim()) errors.push('Phone number is required.');
+  else if (!/^\+?[0-9 ()\-]{7,25}$/.test(form.phone)) errors.push('Enter a valid phone number.');
   return errors;
 }

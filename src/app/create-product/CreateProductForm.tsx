@@ -52,6 +52,7 @@ const emptyForm: ProductForm = {
   powerKw: '',
   engine: '',
   price: '',
+  phone: '',
   inStock: true,
 
   licenseCategories: [],
@@ -199,6 +200,7 @@ export default function CreateProduct() {
       color: form.color,
       engine: form.engine,
       power_kw: Number(form.powerKw),
+        phone: form.phone,
       price: Number(form.price),
       in_stock: form.inStock,
       license_categories: form.licenseCategories,
@@ -353,6 +355,19 @@ export default function CreateProduct() {
                 className={inputClass}
               />
             </div>
+          </div>
+
+          {/* Contact Phone */}
+          <div>
+            <label className={labelClass}>Contact Phone</label>
+            <input
+              name="phone"
+              type="tel"
+              placeholder="e.g. +44 7700 900123"
+              value={form.phone}
+              onChange={handleChange}
+              className={inputClass}
+            />
           </div>
 
           {/* Silhouette Category */}

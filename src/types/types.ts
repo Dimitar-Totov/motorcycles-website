@@ -9,6 +9,7 @@ export interface ProductForm {
   powerKw: string;
   engine: string;
   price: string;
+  phone: string;
   inStock: boolean;
   licenseCategories: LicenseCategory[];
   silhouetteCategory: SilhouetteCategory | '';
