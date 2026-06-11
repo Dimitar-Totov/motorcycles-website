@@ -364,7 +364,7 @@ export default function CreateProduct() {
               name="phone"
               type="tel"
               placeholder="e.g. +44 7700 900123"
-              value={form.phone}
+              value={form.phone ?? ''}
               onChange={handleChange}
               className={inputClass}
             />
