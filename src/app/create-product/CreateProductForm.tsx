@@ -13,6 +13,10 @@ import { validateProductForm } from '@/utils/validators';
 import type { ProductForm } from '@/types/types';
 
 import type { LicenseCategory, SilhouetteCategory } from '@/components/catalog-home/types';
+import { MOTORCYCLE_BRANDS } from '@/data/motorcycleBrands';
+import { MOTORCYCLE_MODELS } from '@/data/motorcycleModels';
+import FancySelect from './FancySelect';
+import ColorSelect from './ColorSelect';
 
 import styles from './CreateProduct.module.css';
 
@@ -34,6 +38,10 @@ const SILHOUETTE_OPTIONS: SilhouetteCategory[] = [
 const LICENSE_OPTIONS: LicenseCategory[] = ['A', 'A2', 'A1', 'B'];
 
 const CURRENT_YEAR = new Date().getFullYear();
+const YEAR_OPTIONS = Array.from(
+  { length: CURRENT_YEAR - 1949 },
+  (_, i) => String(CURRENT_YEAR - i),
+);
 
 const emptyForm: ProductForm = {
   name: '',
@@ -114,6 +122,10 @@ export default function CreateProduct() {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
     setForm(f => ({ ...f, [name]: type === 'checkbox' ? checked : value }));
+  };
+
+  const handleBrandChange = (brand: string) => {
+    setForm(f => ({ ...f, brand, model: '' }));
   };
 
   const toggleLicense = (cat: LicenseCategory) => {
@@ -245,7 +257,31 @@ export default function CreateProduct() {
           style={{ transitionDelay: '0.1s' }}
         >
 
-          {/* Name & Model */}
+          {/* Brand & Model */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label className={labelClass}>Brand</label>
+              <FancySelect
+                options={MOTORCYCLE_BRANDS}
+                value={form.brand}
+                onChange={handleBrandChange}
+                placeholder="Select a brand"
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Model</label>
+              <FancySelect
+                options={MOTORCYCLE_MODELS[form.brand] ?? []}
+                value={form.model}
+                onChange={model => setForm(f => ({ ...f, model }))}
+                placeholder={form.brand ? 'Select a model' : 'Select a brand first'}
+                disabled={!form.brand}
+                emptyMessage="No models listed for this brand"
+              />
+            </div>
+          </div>
+
+          {/* Name & Year */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
               <label className={labelClass}>Name</label>
@@ -259,42 +295,12 @@ export default function CreateProduct() {
               />
             </div>
             <div>
-              <label className={labelClass}>Model</label>
-              <input
-                name="model"
-                type="text"
-                placeholder="e.g. CL-X"
-                value={form.model}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-          </div>
-
-          {/* Brand & Year */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div>
-              <label className={labelClass}>Brand</label>
-              <input
-                name="brand"
-                type="text"
-                placeholder="e.g. CFMOTO"
-                value={form.brand}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-            <div>
               <label className={labelClass}>Year</label>
-              <input
-                name="year"
-                type="number"
-                placeholder={String(CURRENT_YEAR)}
-                min={1900}
-                max={CURRENT_YEAR + 1}
+              <FancySelect
+                options={YEAR_OPTIONS}
                 value={form.year}
-                onChange={handleChange}
-                className={inputClass}
+                onChange={year => setForm(f => ({ ...f, year }))}
+                placeholder={`Select year (1950 – ${CURRENT_YEAR})`}
               />
             </div>
           </div>
@@ -303,13 +309,9 @@ export default function CreateProduct() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
               <label className={labelClass}>Color</label>
-              <input
-                name="color"
-                type="text"
-                placeholder="e.g. Midnight Black"
+              <ColorSelect
                 value={form.color}
-                onChange={handleChange}
-                className={inputClass}
+                onChange={color => setForm(f => ({ ...f, color }))}
               />
             </div>
             <div>
