@@ -161,3 +161,59 @@ p {
     transition: none;
   }
 }
+
+/* ── Product detail hero — staggered entrance ─────────────────── */
+/* Pure CSS so the dark hero's text stays server-rendered (SEO) while
+   still animating in. Each element gets a `hero-rise/-img-in/-pop`
+   class plus an inline `animation-delay` for the stagger. */
+@keyframes heroRise {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes heroImgIn {
+  from { opacity: 0; transform: translateX(40px) scale(1.05); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes heroPop {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes heroGlow {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.hero-anim {
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); /* expo-out */
+}
+.hero-rise    { animation-name: heroRise;  animation-duration: 0.7s; }
+.hero-img-in  { animation-name: heroImgIn; animation-duration: 0.9s; }
+.hero-pop     { animation-name: heroPop;   animation-duration: 0.6s; }
+.hero-glow-in { animation-name: heroGlow;  animation-duration: 1s;   }
+
+/* Accent-filled CTA. Reads --accent from the hero section root so the
+   button always matches the app theme without hardcoding the colour. */
+.cta-accent {
+  background: var(--accent);
+  box-shadow: 0 4px 14px rgb(var(--accent-rgb) / 0.25);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.18s ease, filter 0.18s ease;
+}
+.cta-accent:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgb(var(--accent-rgb) / 0.35);
+}
+.cta-accent:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 14px rgb(var(--accent-rgb) / 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-anim {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

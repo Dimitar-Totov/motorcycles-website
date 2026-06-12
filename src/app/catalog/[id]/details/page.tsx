@@ -1,14 +1,26 @@
 import type { Metadata } from 'next';
+import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, Gauge, Cog, Calendar, Palette } from 'lucide-react';
+import { ArrowLeft, Palette, ShieldCheck, PackageCheck } from 'lucide-react';
 import { getMotorcycleById } from '@/lib/motorcycles';
 import Gallery from './Gallery';
+import AddToCartButton from './AddToCartButton';
+import HeroStats from './HeroStats';
 
 // Dynamically server-rendered: the shared layout reads auth cookies, so the
-// whole tree renders per-request. The HTML (incl. <title>/OG tags) is still
-// fully server-rendered for SEO.
+// whole tree renders per-request. The HTML (incl. <title>/OG tags and all the
+// spec text) is still fully server-rendered for SEO — only the carousel,
+// CTA toast and stat count-up run on the client.
 type PageProps = { params: Promise<{ id: string }> };
+
+// App accent token (amber-500 — the brand colour used by the navbar logo/CTA).
+// Exposed as --accent on the section root so the CTA, model name, first stat
+// and icon highlights all stay in sync without hardcoding the colour.
+const accentVars = {
+  '--accent': '#f59e0b',
+  '--accent-rgb': '245 158 11',
+} as CSSProperties;
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat('de-DE', {
@@ -17,13 +29,6 @@ function formatPrice(price: number) {
     minimumFractionDigits: 2,
   }).format(price);
 }
-
-const LICENSE_STYLES: Record<string, { background: string; color: string }> = {
-  A1: { background: '#fef3c7', color: '#92400e' },
-  A2: { background: '#dbeafe', color: '#1e40af' },
-  A: { background: '#fce7f3', color: '#9d174d' },
-  B: { background: '#dcfce7', color: '#166534' },
-};
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
@@ -55,89 +60,126 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function MotorcycleDetailPage({ params }: PageProps) {
+export default async function ProductDetails({ params }: PageProps) {
   const { id } = await params;
   const m = await getMotorcycleById(id);
 
   if (!m) notFound();
 
+  // Left-column quick facts (kept distinct from the bottom stat strip, which
+  // carries the headline Engine / Power / Year / Category numbers).
   const specs = [
-    { icon: Calendar, label: 'Year', value: String(m.year) },
-    { icon: Cog, label: 'Engine', value: m.engine || '—' },
-    { icon: Gauge, label: 'Power', value: m.powerKw ? `${m.powerKw} kW` : '—' },
     { icon: Palette, label: 'Color', value: m.color || '—' },
+    {
+      icon: ShieldCheck,
+      label: 'License',
+      value: m.licenseCategories.length ? m.licenseCategories.join(' · ') : '—',
+    },
+    { icon: PackageCheck, label: 'Availability', value: m.inStock ? 'In stock' : 'Out of stock' },
   ];
 
   return (
-    <main className="!bg-white">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
-        <Link
-          href="/catalog"
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to catalog
-        </Link>
+    // Override the global light <main>; pull up under the floating navbar so the
+    // dark hero bleeds to the top edge, and clip horizontal overflow so the
+    // oversized bike can bleed right without creating a scrollbar.
+    <main className="!min-h-0 -mt-20 overflow-x-hidden !bg-[#0d0d0d] !p-0 lg:-mt-[5.75rem]">
+      {/* A <div> (not <section>): the global unlayered `section {}` reset in
+          globals.css strips padding/background from real <section> elements. */}
+      <div
+        style={accentVars}
+        className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#0d0d0d] pb-10 pt-24 lg:pt-28"
+      >
+        {/* Ambient depth — restrained accent + cool glows behind everything */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+          <div
+            className="absolute -right-[8%] top-1/4 h-[60%] w-[55%] rounded-full blur-[120px]"
+            style={{ background: 'rgb(var(--accent-rgb) / 0.06)' }}
+          />
+          <div className="absolute bottom-[8%] left-[4%] h-[40%] w-[40%] rounded-full bg-white/[0.015] blur-[120px]" />
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-          {/* Gallery (client) */}
-          <Gallery photos={m.photoUrls} alt={`${m.brand} ${m.model}`} />
-
-          {/* Specs (server-rendered for SEO) */}
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span
-                className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${
-                  m.inStock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                }`}
+        {/* One centered max-width container — the single gutter system shared by
+            BOTH the hero grid and the stats strip, so nothing hugs the viewport
+            edge and both align to the same left/right rails. The dark background
+            + ambient glows above still bleed full-width behind it. */}
+        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 sm:px-10 lg:justify-center lg:px-20">
+          {/* Two-column hero — text left, image right. Columns top-align
+              (items-start): the image card's top edge meets the brand heading's
+              top edge. ~50/50 at md (tablet); 42/58 from lg with a deliberate
+              gutter between the columns. */}
+          <div className="grid items-start gap-10 md:grid-cols-2 md:gap-8 lg:grid-cols-[minmax(0,42fr)_minmax(0,58fr)] lg:gap-12">
+            {/* Left: textual content + actions */}
+            <div className="order-2 flex flex-col md:order-1">
+              {/* <div>/<h1!> rather than <p>: the global unlayered `p {}` and
+                  `h1 {}` resets otherwise force slate-700/text-base/36px here. */}
+              <div
+                className="hero-anim hero-rise text-[clamp(1.4rem,2.4vw,2.1rem)] font-extrabold leading-none tracking-tight text-white"
+                style={{ animationDelay: '0ms', fontFamily: 'var(--font-display)' }}
               >
-                <span
-                  className={`w-1.5 h-1.5 rounded-full ${m.inStock ? 'bg-green-500' : 'bg-red-500'}`}
-                />
-                {m.inStock ? 'In Stock' : 'Out of Stock'}
-              </span>
-              <span className="text-xs uppercase tracking-wider text-slate-400 font-semibold">
-                {m.brand}
-              </span>
+                {m.brand}.
+              </div>
+
+              <h1
+                className="hero-anim hero-rise mt-2 !mb-0 !text-[clamp(2.5rem,6vw,5rem)] !font-black leading-[0.95] tracking-[-0.02em] text-[var(--accent)]"
+                style={{ animationDelay: '100ms', fontFamily: 'var(--font-display)' }}
+              >
+                {m.model}
+              </h1>
+
+              {/* Serif (display family) like the brand/model/stats — keeps the
+                  big headline values on one type system; sans is for labels. */}
+              <div
+                className="hero-anim hero-rise mt-5 text-[clamp(1.4rem,2.6vw,2rem)] font-bold text-white"
+                style={{ animationDelay: '200ms', fontFamily: 'var(--font-display)' }}
+              >
+                {formatPrice(m.price)}
+              </div>
+
+              <dl className="mt-7 space-y-3.5">
+                {specs.map(({ icon: Icon, label, value }, i) => (
+                  <div
+                    key={label}
+                    className="hero-anim hero-rise flex items-center gap-3"
+                    style={{ animationDelay: `${280 + i * 60}ms` }}
+                  >
+                    {/* -ml: optical nudge so the icon's visual mass sits on the
+                        same left rail as the serif title/price (lucide icons
+                        carry internal viewBox padding). */}
+                    <Icon className="-ml-[2px] h-[18px] w-[18px] shrink-0 text-[var(--accent)]" strokeWidth={2} />
+                    <dt className="text-sm font-semibold text-white">{label}</dt>
+                    {/* white/70 ≈ 9.6:1 on #0d0d0d (AAA); stays clearly
+                        secondary to the bold-white label beside it. */}
+                    <dd className="m-0 text-sm font-normal text-white/70">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+
+              {/* Entrance on the wrapper so the button keeps its own hover lift */}
+              <div
+                className="hero-anim hero-pop mt-8 w-full sm:w-auto"
+                style={{ animationDelay: '480ms' }}
+              >
+                <AddToCartButton name={m.name} inStock={m.inStock} />
+              </div>
             </div>
 
-            <h1 className="font-serif text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 mb-2">
-              {m.name}
-            </h1>
+            {/* Right: image card. Fills its grid column, so it reaches the
+                container's right edge just as the left content reaches the
+                left edge — equal left/right margins from the centered container. */}
+            <div className="relative order-1 md:order-2">
+              <Gallery photos={m.photoUrls} alt={`${m.brand} ${m.model}`} />
+            </div>
+          </div>
 
-            <p className="text-2xl font-semibold text-amber-600 mb-6">{formatPrice(m.price)}</p>
-
-            {m.licenseCategories.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-6">
-                {m.licenseCategories.map((cat) => (
-                  <span
-                    key={cat}
-                    className="text-xs font-semibold px-2.5 py-1 rounded-md"
-                    style={LICENSE_STYLES[cat] ?? { background: '#f3f4f6', color: '#374151' }}
-                  >
-                    Licence {cat}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <dl className="grid grid-cols-2 gap-px bg-slate-200 rounded-2xl overflow-hidden border border-slate-200">
-              {specs.map(({ icon: Icon, label, value }) => (
-                <div key={label} className="bg-white p-4 flex items-start gap-3">
-                  <Icon className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" strokeWidth={1.5} />
-                  <div className="min-w-0">
-                    <dt className="text-xs uppercase tracking-wider text-slate-400 font-semibold">
-                      {label}
-                    </dt>
-                    <dd className="text-sm font-medium text-slate-900 truncate">{value}</dd>
-                  </div>
-                </div>
-              ))}
-            </dl>
-
-            <p className="mt-6 text-sm text-slate-500 capitalize">
-              Category: <span className="font-medium text-slate-700">{m.silhouetteCategory}</span>
-            </p>
+          {/* Bottom spec strip — lives in the same container, so it shares the
+              hero's exact left/right gutter. mt-10 is the only extra spacing. */}
+          <div className="mt-10">
+            <HeroStats
+              engine={m.engine}
+              powerKw={m.powerKw}
+              year={m.year}
+              category={m.silhouetteCategory}
+            />
           </div>
         </div>
       </div>
