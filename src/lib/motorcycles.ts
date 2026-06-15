@@ -74,6 +74,33 @@ export async function getMotorcycles(): Promise<Motorcycle[]> {
 }
 
 /**
+ * Fetch up to `limit` other listings of the same brand for the detail-page
+ * marquee. Shuffled (Fisher–Yates) so the strip varies per request; the current
+ * listing is excluded via `excludeId`. Returns [] when the brand has no other
+ * listings (the caller hides the marquee in that case).
+ */
+export const getMotorcyclesByBrand = cache(
+  async (brand: string, excludeId?: string, limit = 10): Promise<Motorcycle[]> => {
+    const supabase = await createClient()
+    let query = supabase.from('motorcycles').select('*').eq('brand', brand)
+    if (excludeId) query = query.neq('id', excludeId)
+
+    const { data, error } = await query
+    if (error || !data) {
+      if (error) console.error('Failed to load brand motorcycles:', error.message)
+      return []
+    }
+
+    const rows = data as MotorcycleRow[]
+    for (let i = rows.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[rows[i], rows[j]] = [rows[j], rows[i]]
+    }
+    return rows.slice(0, limit).map(dbRowToMotorcycle)
+  },
+)
+
+/**
  * Fetch a single listing by id for the detail page; null when not found.
  * Wrapped in React `cache()` so generateMetadata and the page component share a
  * single DB query within the same request.

@@ -110,13 +110,27 @@ function CruiserSilhouette() {
   );
 }
 
+// Every SilhouetteCategory maps to an icon. The newer categories don't have a
+// bespoke drawing yet, so they reuse the closest existing silhouette (e.g. a
+// dirt bike borrows the scrambler shape). Keeping this a full Record means a
+// new category added to the type is a compile error until it's mapped here.
 const SILHOUETTE_MAP: Record<SilhouetteCategory, () => ReactElement> = {
-  naked:     NakedSilhouette,
-  sport:     SportSilhouette,
-  adventure: AdventureSilhouette,
-  scrambler: ScramblerSilhouette,
-  electric:  ElectricSilhouette,
-  cruiser:   CruiserSilhouette,
+  naked:               NakedSilhouette,
+  sport:               SportSilhouette,
+  adventure:           AdventureSilhouette,
+  scrambler:           ScramblerSilhouette,
+  electric:            ElectricSilhouette,
+  cruiser:             CruiserSilhouette,
+  'adventure touring': AdventureSilhouette,
+  touring:             CruiserSilhouette,
+  'cafe racer':        SportSilhouette,
+  'dual sport':        ScramblerSilhouette,
+  supermoto:           ScramblerSilhouette,
+  custom:              CruiserSilhouette,
+  'dirt bike':         ScramblerSilhouette,
+  moped:               NakedSilhouette,
+  scooter:             NakedSilhouette,
+  enduro:              ScramblerSilhouette,
 };
 
 interface Props {
@@ -124,6 +138,7 @@ interface Props {
 }
 
 export function MotorcycleSilhouette({ category }: Props) {
-  const Component = SILHOUETTE_MAP[category];
+  // Defensive fallback: an unmapped/legacy category value still renders.
+  const Component = SILHOUETTE_MAP[category] ?? NakedSilhouette;
   return <Component />;
 }

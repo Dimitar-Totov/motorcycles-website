@@ -1,0 +1,88 @@
+/* ── Brand marquee ──────────────────────────────────────────────────
+   A continuously auto-scrolling, seamless-loop strip of brand cards.
+
+   Seamlessness: the card list is rendered TWICE inside the track and the
+   track animates translateX(0 → -50%). Because the content is doubled, at
+   -50% the second copy sits exactly where the first started — no jump.
+
+   The per-card spacing is applied as `margin-right` on each item (NOT flex
+   `gap`) on purpose: that makes every item occupy exactly `width + gap`, so
+   the track width is a clean 2× of one set and -50% lands pixel-perfect on
+   the seam (flex `gap` only sits *between* items → 19 gaps not 20 → the
+   -50% point would fall half a gap short and stutter).
+------------------------------------------------------------------------ */
+
+.brand-marquee {
+  --marquee-duration: 36s; /* full-loop time; overridable inline per instance */
+  --marquee-gap: 24px;
+
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  /* Soft fade-in/out at both edges instead of a hard cut. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+}
+
+.brand-marquee__track {
+  display: flex;
+  width: max-content;
+  /* Vertical breathing room so a hovered card's scale()/shadow isn't clipped
+     by the container's overflow:hidden. */
+  padding-block: 1.25rem;
+}
+
+.brand-marquee__item {
+  flex: 0 0 auto;
+  width: 280px;
+  margin-right: var(--marquee-gap);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .brand-marquee__track {
+    animation: brand-marquee-scroll var(--marquee-duration) linear infinite;
+  }
+
+  /* Pause on hover (desktop) and on touch-hold (the active pointer makes the
+     container :active on touch devices). */
+  .brand-marquee:hover .brand-marquee__track,
+  .brand-marquee:active .brand-marquee__track {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes brand-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ── Reduced motion: no auto-scroll ─────────────────────────────────
+   Fall back to a plain horizontally-scrollable row and drop the duplicate
+   set (it only exists to make the animation seamless). */
+@media (prefers-reduced-motion: reduce) {
+  .brand-marquee {
+    overflow-x: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .brand-marquee__item[data-marquee-dup='true'] {
+    display: none;
+  }
+}

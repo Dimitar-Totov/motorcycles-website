@@ -1,6 +1,6 @@
 export type LicenseCategory = 'A' | 'A2' | 'A1' | 'B';
 
-export type SilhouetteCategory = 'naked' | 'sport' | 'adventure' | 'scrambler' | 'electric' | 'cruiser';
+export type SilhouetteCategory = 'naked' | 'sport' | 'adventure' | 'scrambler' | 'electric' | 'cruiser' | 'adventure touring' | 'touring' | 'cafe racer' | 'dual sport' | 'supermoto' | 'custom' | 'dirt bike' | 'moped' | 'scooter' | 'enduro';
 
 export interface Motorcycle {
   /** UUID primary key from the `motorcycles` table (was a number in the old mock data). */

@@ -32,8 +32,15 @@ interface PhotoFile {
 
 
 const SILHOUETTE_OPTIONS: SilhouetteCategory[] = [
-  'naked', 'sport', 'adventure', 'scrambler', 'electric', 'cruiser',
+  'naked', 'sport', 'adventure', 'scrambler', 'electric', 'cruiser', 'adventure touring', 'touring', 'cafe racer', 'dual sport', 'supermoto', 'custom', 'dirt bike', 'moped', 'scooter', 'enduro'
 ];
+
+// Title-case a stored (lowercase) category for display, e.g. "dual sport" →
+// "Dual Sport". Categories are stored lowercase to match SilhouetteCategory.
+const toTitleCase = (s: string) => s.replace(/\b\w/g, c => c.toUpperCase());
+
+// Display labels for the category dropdown (values stay lowercase on store).
+const CATEGORY_OPTIONS = SILHOUETTE_OPTIONS.map(toTitleCase);
 
 const LICENSE_OPTIONS: LicenseCategory[] = ['A', 'A2', 'A1', 'B'];
 
@@ -200,7 +207,7 @@ export default function CreateProduct() {
       color: form.color,
       engine: form.engine,
       power_kw: Number(form.powerKw),
-        phone: form.phone,
+      phone: form.phone,
       price: Number(form.price),
       in_stock: form.inStock,
       license_categories: form.licenseCategories,
@@ -370,22 +377,22 @@ export default function CreateProduct() {
             />
           </div>
 
-          {/* Silhouette Category */}
+          {/* Silhouette Category — custom dropdown (scrollable, height-capped
+              panel) so the 16-item list never overflows the viewport on
+              mobile/tablet the way the native <select> popup did. */}
           <div>
             <label className={labelClass}>Category</label>
-            <select
-              name="silhouetteCategory"
-              value={form.silhouetteCategory}
-              onChange={handleChange}
-              className={`${inputClass} cursor-pointer`}
-            >
-              <option value="" disabled className="bg-gray-900">Select a category</option>
-              {SILHOUETTE_OPTIONS.map(opt => (
-                <option key={opt} value={opt} className="bg-gray-900 capitalize">
-                  {opt.charAt(0).toUpperCase() + opt.slice(1)}
-                </option>
-              ))}
-            </select>
+            <FancySelect
+              options={CATEGORY_OPTIONS}
+              value={form.silhouetteCategory ? toTitleCase(form.silhouetteCategory) : ''}
+              onChange={label =>
+                setForm(f => ({
+                  ...f,
+                  silhouetteCategory: label.toLowerCase() as SilhouetteCategory,
+                }))
+              }
+              placeholder="Select a category"
+            />
           </div>
 
           {/* License Categories */}
@@ -399,11 +406,10 @@ export default function CreateProduct() {
                     key={cat}
                     type="button"
                     onClick={() => toggleLicense(cat)}
-                    className={`px-5 py-2 rounded-lg border text-sm font-semibold tracking-wide transition-colors duration-200 ${
-                      active
+                    className={`px-5 py-2 rounded-lg border text-sm font-semibold tracking-wide transition-colors duration-200 ${active
                         ? 'bg-amber-400 border-amber-400 text-gray-900'
                         : 'bg-white/5 border-white/20 text-white/60 hover:border-amber-400/60'
-                    }`}
+                      }`}
                   >
                     {cat}
                   </button>
@@ -444,14 +450,13 @@ export default function CreateProduct() {
               onDragOver={e => { e.preventDefault(); setDragging(true); }}
               onDragLeave={() => setDragging(false)}
               onDrop={onDrop}
-              className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl py-8 cursor-pointer transition-colors duration-200 select-none ${
-                dragging
+              className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl py-8 cursor-pointer transition-colors duration-200 select-none ${dragging
                   ? 'border-amber-400 bg-amber-400/5'
                   : 'border-white/20 bg-white/[0.03] hover:border-amber-400/50 hover:bg-white/[0.05]'
-              } ${photos.length >= MAX_FILES ? 'pointer-events-none opacity-40' : ''}`}
+                } ${photos.length >= MAX_FILES ? 'pointer-events-none opacity-40' : ''}`}
             >
               <ImagePlus className="w-7 h-7 text-amber-400/70" strokeWidth={1.5} />
-                <span className="text-amber-400 font-medium"> Drag & drop photos here, or browse</span>
+              <span className="text-amber-400 font-medium"> Drag & drop photos here, or browse</span>
               <p className="!text-amber-400">JPEG, PNG, WebP, AVIF — up to {MAX_FILES} photos</p>
             </div>
 

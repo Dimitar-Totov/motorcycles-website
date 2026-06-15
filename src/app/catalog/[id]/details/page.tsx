@@ -3,10 +3,11 @@ import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, Palette, ShieldCheck, PackageCheck } from 'lucide-react';
-import { getMotorcycleById } from '@/lib/motorcycles';
+import { getMotorcycleById, getMotorcyclesByBrand } from '@/lib/motorcycles';
 import Gallery from './Gallery';
 import AddToCartButton from './AddToCartButton';
 import HeroStats from './HeroStats';
+import BrandMarquee from './BrandMarquee';
 
 // Dynamically server-rendered: the shared layout reads auth cookies, so the
 // whole tree renders per-request. The HTML (incl. <title>/OG tags and all the
@@ -66,6 +67,9 @@ export default async function ProductDetails({ params }: PageProps) {
 
   if (!m) notFound();
 
+  // Other listings from the same brand, for the auto-scrolling strip below.
+  const brandBikes = await getMotorcyclesByBrand(m.brand, m.id, 10);
+
   // Left-column quick facts (kept distinct from the bottom stat strip, which
   // carries the headline Engine / Power / Year / Category numbers).
   const specs = [
@@ -103,6 +107,18 @@ export default async function ProductDetails({ params }: PageProps) {
             edge and both align to the same left/right rails. The dark background
             + ambient glows above still bleed full-width behind it. */}
         <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 sm:px-10 lg:justify-center lg:px-20">
+          {/* Back-to-catalog — mobile + tablet only. On desktop (lg+) the
+              floating navbar already provides navigation; here it collapses to
+              a hamburger, leaving no visible way back, so we surface one. */}
+          <Link
+            href="/catalog"
+            className="hero-anim hero-rise mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white/75 backdrop-blur-sm transition-colors duration-200 hover:border-white/30 hover:text-white lg:hidden"
+            style={{ animationDelay: '0ms' }}
+          >
+            <ArrowLeft className="h-4 w-4" strokeWidth={2.2} />
+            Back to catalog
+          </Link>
+
           {/* Two-column hero — text left, image right. Columns top-align
               (items-start): the image card's top edge meets the brand heading's
               top edge. ~50/50 at md (tablet); 42/58 from lg with a deliberate
@@ -183,6 +199,10 @@ export default async function ProductDetails({ params }: PageProps) {
           </div>
         </div>
       </div>
+
+      {/* Auto-scrolling strip of other bikes from the same brand. Full-bleed
+          (outside the hero's max-w container) so cards fade at the screen edges. */}
+      <BrandMarquee brand={m.brand} motorcycles={brandBikes} />
     </main>
   );
 }
