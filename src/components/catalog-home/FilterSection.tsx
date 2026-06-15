@@ -7,7 +7,7 @@ interface Props {
   defaultOpen?: boolean;
 }
 
-export default function FilterSection({ title, children, defaultOpen = true }: Props) {
+export default function FilterSection({ title, children, defaultOpen = false }: Props) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (

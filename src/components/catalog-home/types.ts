@@ -30,4 +30,5 @@ export interface FilterState {
   years: number[];
   powerMin: number;
   powerMax: number;
+  categories: SilhouetteCategory[];
 }

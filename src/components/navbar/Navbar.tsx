@@ -6,11 +6,23 @@ import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown, Bike } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 
-const productItems = [
-  { label: "Sport Bikes", href: "#" },
-  { label: "Cruisers", href: "#" },
-  { label: "Adventure", href: "#" },
-  { label: "Accessories", href: "#" },
+const CATEGORY_ITEMS = [
+  { label: "Naked",             value: "naked" },
+  { label: "Sport",             value: "sport" },
+  { label: "Adventure",         value: "adventure" },
+  { label: "Scrambler",         value: "scrambler" },
+  { label: "Electric",          value: "electric" },
+  { label: "Cruiser",           value: "cruiser" },
+  { label: "Adventure Touring", value: "adventure touring" },
+  { label: "Touring",           value: "touring" },
+  { label: "Cafe Racer",        value: "cafe racer" },
+  { label: "Dual Sport",        value: "dual sport" },
+  { label: "Supermoto",         value: "supermoto" },
+  { label: "Custom",            value: "custom" },
+  { label: "Dirt Bike",         value: "dirt bike" },
+  { label: "Moped",             value: "moped" },
+  { label: "Scooter",           value: "scooter" },
+  { label: "Enduro",            value: "enduro" },
 ];
 
 export default function Navbar() {
@@ -73,11 +85,11 @@ export default function Navbar() {
             </Link>
 
             <div onMouseEnter={openDropdown} onMouseLeave={closeDropdown}>
-              <button
-                type="button"
+              <Link
+                href="/catalog"
                 aria-expanded={productsOpen}
                 aria-haspopup="true"
-                className={`flex items-center gap-1.5 text-sm lg:text-base font-medium transition-all duration-150 px-3 lg:px-4 py-1.5 lg:py-2 rounded-full cursor-pointer ${productsOpen
+                className={`flex items-center gap-1.5 text-sm lg:text-base font-medium transition-all duration-150 px-3 lg:px-4 py-1.5 lg:py-2 rounded-full ${productsOpen || isActive("/catalog")
                   ? "text-white bg-white/10"
                   : "text-slate-300 hover:text-white hover:bg-white/[0.07]"
                   }`}
@@ -87,7 +99,7 @@ export default function Navbar() {
                   className={`w-3.5 h-3.5 lg:w-4 lg:h-4 transition-transform duration-200 ${productsOpen ? "rotate-180 text-amber-400" : ""
                     }`}
                 />
-              </button>
+              </Link>
             </div>
 
             {isAdmin && (
@@ -139,21 +151,31 @@ export default function Navbar() {
           <div
             onMouseEnter={openDropdown}
             onMouseLeave={closeDropdown}
-            className={`pointer-events-auto w-48 lg:w-56 transition-all duration-200 ease-out ${productsOpen
+            className={`pointer-events-auto transition-all duration-200 ease-out ${productsOpen
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-1.5 pointer-events-none"
               }`}
           >
-            <div className="bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-white/[0.09] shadow-[0_16px_40px_rgba(0,0,0,0.4)] p-1.5">
-              {productItems.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="flex items-center px-3 lg:px-4 py-[0.55rem] lg:py-2.5 text-sm lg:text-base text-slate-300 hover:text-white hover:bg-white/[0.07] rounded-xl transition-colors duration-100"
-                >
-                  {item.label}
-                </a>
-              ))}
+            <div className="bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-white/[0.09] shadow-[0_16px_40px_rgba(0,0,0,0.4)] p-2">
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateRows: 'repeat(4, auto)',
+                  gridAutoFlow: 'column',
+                  gap: '2px',
+                }}
+              >
+                {CATEGORY_ITEMS.map((item) => (
+                  <a
+                    key={item.value}
+                    href={`/catalog?category=${encodeURIComponent(item.value)}`}
+                    onClick={() => setProductsOpen(false)}
+                    className="flex items-center px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/[0.07] rounded-xl transition-colors duration-100 whitespace-nowrap"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -180,27 +202,36 @@ export default function Navbar() {
 
             {/* Mobile Products Accordion */}
             <div>
-              <button
-                type="button"
-                onClick={() => setMobileProductsOpen((o) => !o)}
-                className="w-full flex items-center justify-between text-sm font-medium text-slate-300 hover:text-white hover:bg-white/[0.07] px-3 py-2.5 rounded-full transition-colors duration-100"
-              >
-                <span>Products</span>
-                <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${mobileProductsOpen ? "rotate-180 text-amber-400" : ""
-                    }`}
-                />
-              </button>
+              <div className="flex items-center">
+                <Link
+                  href="/catalog"
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex-1 text-sm font-medium px-3 py-2.5 rounded-full transition-colors duration-100 ${isActive("/catalog") ? "text-white bg-white/10" : "text-slate-300 hover:text-white hover:bg-white/[0.07]"}`}
+                >
+                  Products
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setMobileProductsOpen((o) => !o)}
+                  className="flex items-center justify-center w-9 h-9 rounded-full text-slate-300 hover:text-white hover:bg-white/[0.07] transition-colors duration-100"
+                  aria-label="Toggle product categories"
+                >
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${mobileProductsOpen ? "rotate-180 text-amber-400" : ""}`}
+                  />
+                </button>
+              </div>
 
               <div
-                className={`overflow-hidden transition-all duration-200 ease-in-out ${mobileProductsOpen ? "max-h-48 opacity-100" : "max-h-0 opacity-0"
+                className={`overflow-hidden transition-all duration-200 ease-in-out ${mobileProductsOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                   }`}
               >
-                <div className="pt-0.5 pb-1 pl-3 flex flex-col gap-0.5">
-                  {productItems.map((item) => (
+                <div className="pt-0.5 pb-1 pl-3 grid grid-cols-2 gap-0.5">
+                  {CATEGORY_ITEMS.map((item) => (
                     <a
-                      key={item.label}
-                      href={item.href}
+                      key={item.value}
+                      href={`/catalog?category=${encodeURIComponent(item.value)}`}
+                      onClick={() => setMobileOpen(false)}
                       className="text-sm text-slate-400 hover:text-white px-3 py-2 rounded-full transition-colors duration-100 hover:bg-white/[0.07]"
                     >
                       {item.label}

@@ -1,4 +1,4 @@
-import { BRANDS } from './mockData';
+import { MOTORCYCLE_BRANDS as BRANDS } from '@/data/motorcycleBrands';
 
 interface Props {
   selected: string[];
@@ -15,7 +15,7 @@ export default function BrandFilter({ selected, onChange }: Props) {
   };
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto pr-1 pt-1">
       {BRANDS.map(brand => {
         const active = selected.includes(brand);
         return (

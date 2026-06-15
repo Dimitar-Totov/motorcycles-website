@@ -2,30 +2,37 @@
 
 import { useState, useMemo } from 'react';
 import { SlidersHorizontal, X } from 'lucide-react';
-import type { FilterState, Motorcycle } from './types';
+import type { FilterState, Motorcycle, SilhouetteCategory } from './types';
 import { POWER_MIN, POWER_MAX } from './mockData';
 import FilterSidebar from './FilterSidebar';
 import ProductGrid from './ProductGrid';
 
-const initialFilters: FilterState = {
+const baseFilters: FilterState = {
   brands: [],
   colors: [],
   years: [],
   powerMin: POWER_MIN,
   powerMax: POWER_MAX,
+  categories: [],
 };
 
 interface Props {
   /** Listings fetched on the server (Home page) and filtered here on the client. */
   motorcycles: Motorcycle[];
+  /** Pre-selected category from ?category= URL param (set by the navbar dropdown). */
+  initialCategory?: string;
 }
 
-export default function MotorcycleCatalog({ motorcycles }: Props) {
-  const [filters, setFilters] = useState<FilterState>(initialFilters);
+export default function MotorcycleCatalog({ motorcycles, initialCategory }: Props) {
+  const [filters, setFilters] = useState<FilterState>({
+    ...baseFilters,
+    categories: initialCategory ? [initialCategory as SilhouetteCategory] : [],
+  });
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const hasActiveFilters =
     filters.brands.length > 0 ||
+    filters.categories.length > 0 ||
     filters.colors.length > 0 ||
     filters.years.length > 0 ||
     filters.powerMin > POWER_MIN ||
@@ -33,6 +40,7 @@ export default function MotorcycleCatalog({ motorcycles }: Props) {
 
   const activeFilterCount =
     filters.brands.length +
+    filters.categories.length +
     filters.colors.length +
     filters.years.length +
     (filters.powerMin > POWER_MIN || filters.powerMax < POWER_MAX ? 1 : 0);
@@ -40,20 +48,22 @@ export default function MotorcycleCatalog({ motorcycles }: Props) {
   const filtered = useMemo(
     () =>
       motorcycles.filter(m => {
-        if (filters.brands.length > 0 && !filters.brands.includes(m.brand)) return false;
-        if (filters.colors.length > 0 && !filters.colors.includes(m.color)) return false;
+        if (filters.categories.length > 0 && !filters.categories.includes(m.silhouetteCategory)) return false;
+        if (filters.brands.length > 0 && !filters.brands.some(b => b.toLowerCase() === m.brand.toLowerCase())) return false;
+        if (filters.colors.length > 0 && !filters.colors.some(c => c.toLowerCase() === m.color.toLowerCase())) return false;
         if (filters.years.length > 0 && !filters.years.includes(m.year)) return false;
-        if (m.powerKw < filters.powerMin || m.powerKw > filters.powerMax) return false;
+        if (m.powerKw > 0 && (m.powerKw < filters.powerMin || m.powerKw > filters.powerMax)) return false;
         return true;
       }),
     [filters, motorcycles]
   );
 
-  const clearAll = () => setFilters(initialFilters);
+  const clearAll = () => setFilters(baseFilters);
 
   const sidebarProps = {
     filters,
     onBrandChange: (brands: string[]) => setFilters(f => ({ ...f, brands })),
+    onCategoryChange: (categories: SilhouetteCategory[]) => setFilters(f => ({ ...f, categories })),
     onColorChange: (colors: string[]) => setFilters(f => ({ ...f, colors })),
     onYearChange: (years: number[]) => setFilters(f => ({ ...f, years })),
     onPowerChange: ([powerMin, powerMax]: [number, number]) =>
@@ -94,7 +104,7 @@ export default function MotorcycleCatalog({ motorcycles }: Props) {
           </aside>
 
           {/* Product grid */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 min-h-[70vh]">
             <ProductGrid motorcycles={filtered} />
           </div>
         </div>

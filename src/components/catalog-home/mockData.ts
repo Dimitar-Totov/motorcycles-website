@@ -2,6 +2,27 @@
 // (The former in-memory `motorcycles` sample array was removed — listings now
 // come from Supabase via src/lib/motorcycles.ts.)
 
+import type { SilhouetteCategory } from './types';
+
+export const CATEGORIES: { label: string; value: SilhouetteCategory }[] = [
+  { label: 'Naked',             value: 'naked' },
+  { label: 'Sport',             value: 'sport' },
+  { label: 'Adventure',         value: 'adventure' },
+  { label: 'Scrambler',         value: 'scrambler' },
+  { label: 'Electric',          value: 'electric' },
+  { label: 'Cruiser',           value: 'cruiser' },
+  { label: 'Adventure Touring', value: 'adventure touring' },
+  { label: 'Touring',           value: 'touring' },
+  { label: 'Cafe Racer',        value: 'cafe racer' },
+  { label: 'Dual Sport',        value: 'dual sport' },
+  { label: 'Supermoto',         value: 'supermoto' },
+  { label: 'Custom',            value: 'custom' },
+  { label: 'Dirt Bike',         value: 'dirt bike' },
+  { label: 'Moped',             value: 'moped' },
+  { label: 'Scooter',           value: 'scooter' },
+  { label: 'Enduro',            value: 'enduro' },
+];
+
 export const BRANDS = ['CFLITE', 'CFMOTO', 'Fantic', 'MV Agusta', 'VOGE', 'ZEEHO'];
 
 export const COLORS = [
@@ -16,8 +37,8 @@ export const COLORS = [
 ];
 
 export const YEARS = [2022, 2023, 2024, 2025, 2026];
-export const POWER_MIN = 5;
-export const POWER_MAX = 130;
+export const POWER_MIN = 0;
+export const POWER_MAX = 300;
 
 export const COLOR_SWATCHES: Record<string, string> = {
   Black: '#111827',

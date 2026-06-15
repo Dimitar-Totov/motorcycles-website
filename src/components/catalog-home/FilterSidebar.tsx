@@ -1,7 +1,8 @@
 import { SlidersHorizontal, X } from 'lucide-react';
-import type { FilterState } from './types';
+import type { FilterState, SilhouetteCategory } from './types';
 import FilterSection from './FilterSection';
 import BrandFilter from './BrandFilter';
+import CategoryFilter from './CategoryFilter';
 import ColorFilter from './ColorFilter';
 import YearFilter from './YearFilter';
 import PowerRangeFilter from './PowerRangeFilter';
@@ -9,6 +10,7 @@ import PowerRangeFilter from './PowerRangeFilter';
 interface Props {
   filters: FilterState;
   onBrandChange: (brands: string[]) => void;
+  onCategoryChange: (categories: SilhouetteCategory[]) => void;
   onColorChange: (colors: string[]) => void;
   onYearChange: (years: number[]) => void;
   onPowerChange: (range: [number, number]) => void;
@@ -19,6 +21,7 @@ interface Props {
 export default function FilterSidebar({
   filters,
   onBrandChange,
+  onCategoryChange,
   onColorChange,
   onYearChange,
   onPowerChange,
@@ -43,6 +46,10 @@ export default function FilterSidebar({
           </button>
         )}
       </div>
+
+      <FilterSection title="Category" defaultOpen>
+        <CategoryFilter selected={filters.categories} onChange={onCategoryChange} />
+      </FilterSection>
 
       <FilterSection title="Brand">
         <BrandFilter selected={filters.brands} onChange={onBrandChange} />
