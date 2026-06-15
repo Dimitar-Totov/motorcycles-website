@@ -15,6 +15,7 @@ const productItems = [
 
 export default function Navbar() {
   const { user } = useUser();
+  const isAdmin = user?.app_metadata?.role === 'admin';
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
@@ -89,7 +90,7 @@ export default function Navbar() {
               </button>
             </div>
 
-            {user && (
+            {isAdmin && (
               <Link href="/create-product" className={navLinkClass("/create-product")}>
                 Create Product
               </Link>
@@ -209,7 +210,7 @@ export default function Navbar() {
               </div>
             </div>
 
-            {user && (
+            {isAdmin && (
               <Link
                 href="/create-product"
                 onClick={() => setMobileOpen(false)}

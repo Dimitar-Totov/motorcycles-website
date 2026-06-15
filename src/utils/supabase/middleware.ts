@@ -2,9 +2,9 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 /** Routes that require an authenticated user. */
-const PROTECTED_ROUTES = ['/profile', '/create-product', '/dashboard']
+const PROTECTED_ROUTES = ['/profile', '/dashboard']
 /** Routes that require an authenticated user with the 'admin' role. */
-const ADMIN_ROUTES = ['/admin']
+const ADMIN_ROUTES = ['/admin', '/create-product']
 /** Routes only signed-out users should see (e.g. the auth screen). */
 const GUEST_ONLY_ROUTES = ['/auth']
 
