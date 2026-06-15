@@ -71,8 +71,10 @@ export default function ProductGrid({ motorcycles }: Props) {
           alignItems: 'start',
         }}
       >
-        {motorcycles.map(moto => (
-          <MotorcycleCard key={moto.id} motorcycle={moto} />
+        {motorcycles.map((moto, i) => (
+          // Prioritise the first row (~4 cards) — these are above the fold and
+          // hold the LCP image, so they should eager-load instead of lazy-load.
+          <MotorcycleCard key={moto.id} motorcycle={moto} priority={i < 4} />
         ))}
       </div>
     </div>

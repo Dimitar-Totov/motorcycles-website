@@ -39,9 +39,12 @@ function formatPrice(price: number) {
 
 interface Props {
   motorcycle: Motorcycle;
+  /** Prioritise the cover image (eager-load + preload) for above-the-fold
+   *  cards so the LCP image isn't lazy-loaded. */
+  priority?: boolean;
 }
 
-export default function MotorcycleCard({ motorcycle: m }: Props) {
+export default function MotorcycleCard({ motorcycle: m, priority = false }: Props) {
   const yearShort = `'${String(m.year).slice(-2)}`;
   // First photo is the cover; fall back to the silhouette when there are none.
   const coverUrl = m.photoUrls?.[0];
@@ -71,6 +74,7 @@ export default function MotorcycleCard({ motorcycle: m }: Props) {
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 280px"
               className="moto-card__cover"
+              priority={priority}
             />
             {/* Top/bottom darkening keeps the status pill + year badge legible
                 over bright photo backgrounds. */}
