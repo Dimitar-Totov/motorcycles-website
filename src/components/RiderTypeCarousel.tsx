@@ -1,7 +1,19 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Bike,
+  Mountain,
+  Gauge,
+  TrendingUp,
+} from 'lucide-react';
+
+import RiderTypeModal, {
+  type RiderCard,
+  type RiderProfileCategory,
+} from './RiderTypeModal';
 
 import nakedImg from '../assets/naked-street.jpeg';
 import sportImg from '../assets/sport-supersport.jpg';
@@ -10,13 +22,28 @@ import adventureImg from '../assets/adventure-dual.jpg';
 import cruiserImg from '../assets/cruiser.jpg';
 import cafeImg from '../assets/cafe-scrambler.jpg';
 
-const CARDS = [
+const CARDS: RiderCard[] = [
   {
     id: 1,
     type: 'Naked / Street Fighter',
     description: 'Stripped down, aggressive, and unapologetically urban.',
     image: nakedImg,
     alt: 'Naked street fighter motorcycle — aggressive upright riding position with no fairings',
+    category: 'naked',
+    longDescription:
+      "Born for the urban jungle, naked bikes strip away the bodywork to reveal raw mechanical character. Wide bars and an upright stance give you total command in traffic, while punchy mid-range torque makes every light-to-light sprint addictive. It's the purist's choice — honest, agile, and endlessly fun.",
+    specs: {
+      position: 'Upright & aggressive',
+      terrain: 'City & twisty roads',
+      comfort: 'Moderate',
+      experience: 'Beginner → Intermediate',
+    },
+    highlights: [
+      'Minimal bodywork for pure character',
+      'Wide handlebars for sharp control',
+      'Punchy, accessible mid-range torque',
+      'Light and easy to flick through traffic',
+    ],
   },
   {
     id: 2,
@@ -24,6 +51,21 @@ const CARDS = [
     description: 'Razor-sharp handling built for the apex of every corner.',
     image: sportImg,
     alt: 'Sport motorcycle — full fairing aerodynamic machine built for track-level performance',
+    category: 'sport',
+    longDescription:
+      'Engineered around a single obsession: speed. Full aerodynamic fairings, race-bred suspension and high-revving engines turn every on-ramp into a runway. The aggressive forward lean puts your weight over the front for surgical cornering. Demanding, exhilarating, and built to chase the apex.',
+    specs: {
+      position: 'Aggressive forward lean',
+      terrain: 'Track & canyon roads',
+      comfort: 'Performance-focused',
+      experience: 'Intermediate → Advanced',
+    },
+    highlights: [
+      'Full aerodynamic fairings',
+      'High-revving, high-output engines',
+      'Race-derived suspension & brakes',
+      'Precision handling at speed',
+    ],
   },
   {
     id: 3,
@@ -31,6 +73,21 @@ const CARDS = [
     description: 'Effortless miles, all-day comfort, the open road as your office.',
     image: touringImg,
     alt: 'Touring motorcycle — long-distance comfort cruiser with integrated luggage and wind protection',
+    category: 'touring',
+    longDescription:
+      'Designed to devour horizons. Touring machines pair plush ergonomics with wind protection, integrated luggage and a huge fuel range so the only thing that stops you is your own schedule. Add a passenger, pack your gear, and let the open road become your second home.',
+    specs: {
+      position: 'Relaxed & upright',
+      terrain: 'Highways & long distance',
+      comfort: 'Exceptional',
+      experience: 'All levels',
+    },
+    highlights: [
+      'Integrated, lockable luggage',
+      'Full wind & weather protection',
+      'Big fuel range for long hauls',
+      'Comfortable two-up riding',
+    ],
   },
   {
     id: 4,
@@ -38,6 +95,21 @@ const CARDS = [
     description: 'Where the pavement ends, the real journey begins.',
     image: adventureImg,
     alt: 'Adventure dual-sport motorcycle — tall, rugged bike capable of both on and off-road riding',
+    category: 'adventure',
+    longDescription:
+      'The go-anywhere all-rounder. With long-travel suspension, a commanding riding position and rugged protection, adventure bikes are equally at home on a motorway as on a gravel mountain pass. When the pavement ends, the real journey begins.',
+    specs: {
+      position: 'Tall & commanding',
+      terrain: 'On & off-road',
+      comfort: 'High',
+      experience: 'Intermediate',
+    },
+    highlights: [
+      'Long-travel suspension',
+      'Rugged off-road-ready wheels',
+      'Engine & hand protection',
+      'Versatile across any terrain',
+    ],
   },
   {
     id: 5,
@@ -45,6 +117,21 @@ const CARDS = [
     description: 'Low, loud, and laid back — the soul of the open highway.',
     image: cruiserImg,
     alt: 'Cruiser motorcycle — low-slung relaxed riding position with classic American styling',
+    category: 'cruiser',
+    longDescription:
+      'Low, relaxed and dripping with attitude. Cruisers put your feet forward and your mind at ease, powered by big, torquey engines that pull effortlessly from low revs. It\'s less about the destination and more about the rumble of the ride itself.',
+    specs: {
+      position: 'Feet-forward & laid back',
+      terrain: 'Open highways & boulevards',
+      comfort: 'High',
+      experience: 'Beginner → Intermediate',
+    },
+    highlights: [
+      'Low seat height, easy to plant',
+      'Big, effortless low-end torque',
+      'Iconic, timeless styling',
+      'Relaxed all-day cruising',
+    ],
   },
   {
     id: 6,
@@ -52,6 +139,21 @@ const CARDS = [
     description: 'Timeless style with a rebellious streak.',
     image: cafeImg,
     alt: 'Cafe racer scrambler motorcycle — retro-inspired minimalist design with modern performance',
+    category: 'cafe racer',
+    longDescription:
+      'Where heritage meets rebellion. Cafe racers channel 60s racetrack cool with clip-ons and a sporty crouch, while scramblers add knobby tyres and a go-anywhere spirit. Lightweight, characterful and endlessly customisable — these are bikes with a story to tell.',
+    specs: {
+      position: 'Sporty crouch / upright',
+      terrain: 'City streets & light trails',
+      comfort: 'Moderate',
+      experience: 'All levels',
+    },
+    highlights: [
+      'Retro-inspired, minimalist design',
+      'Light and nimble chassis',
+      'Loaded with vintage character',
+      'A blank canvas for customisation',
+    ],
   },
 ];
 
@@ -59,11 +161,55 @@ const TOTAL = CARDS.length;
 const TRANSITION_DURATION = 500;
 const EASING = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
+/**
+ * Adapt a carousel `RiderCard` into the generic shape the modal consumes.
+ * The hero image, title split and CTA target all derive from the card data —
+ * so the same modal works for every bike category with nothing hardcoded.
+ */
+function toRiderProfile(card: RiderCard): RiderProfileCategory {
+  const [titleLead, ...rest] = card.type.split('/').map((part) => part.trim());
+  return {
+    eyebrow: 'Rider Profile',
+    index: card.id,
+    titleLead,
+    titleRest: rest.join(' / '),
+    description: card.longDescription,
+    image: card.image.src, // SAME asset shown on the carousel card
+    imageAlt: card.alt,
+    specs: [
+      {
+        icon: <Bike size={18} strokeWidth={2} />,
+        label: 'Riding Position',
+        value: card.specs.position,
+      },
+      {
+        icon: <Mountain size={18} strokeWidth={2} />,
+        label: 'Best Terrain',
+        value: card.specs.terrain,
+      },
+      {
+        icon: <Gauge size={18} strokeWidth={2} />,
+        label: 'Comfort',
+        value: card.specs.comfort,
+      },
+      {
+        icon: <TrendingUp size={18} strokeWidth={2} />,
+        label: 'Experience',
+        value: card.specs.experience,
+      },
+    ],
+    defines: card.highlights,
+    ctaLabel: `Browse ${titleLead} bikes`,
+    ctaHref: `/catalog?category=${encodeURIComponent(card.category)}`,
+  };
+}
+
 export default function RiderTypeCarousel() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [sectionVisible, setSectionVisible] = useState(false);
   const [active, setActive] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [modalCard, setModalCard] = useState<RiderCard | null>(null);
   const touchStartX = useRef<number | null>(null);
   const reducedMotion =
     typeof window !== 'undefined'
@@ -100,15 +246,16 @@ export default function RiderTypeCarousel() {
   const prev = useCallback(() => goTo(active - 1), [active, goTo]);
   const next = useCallback(() => goTo(active + 1), [active, goTo]);
 
-  // Keyboard navigation
+  // Keyboard navigation — suspended while the modal owns the keyboard.
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
+      if (modalCard) return;
       if (e.key === 'ArrowLeft') prev();
       if (e.key === 'ArrowRight') next();
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [prev, next]);
+  }, [prev, next, modalCard]);
 
   // Touch swipe
   const onTouchStart = (e: React.TouchEvent) => {
@@ -263,14 +410,14 @@ export default function RiderTypeCarousel() {
                         }`,
                     borderRadius: '18px',
                     overflow: 'hidden',
-                    cursor: isActive ? 'default' : 'pointer',
+                    cursor: 'pointer',
                     // hide peek cards on tablet/mobile via CSS
                     display:
                       !isActive && !isPrev && !isNext ? 'none' : undefined,
                   }}
                   // Hide peek cards on small screens
                   className={!isActive ? 'hidden lg:block' : ''}
-                  onClick={() => !isActive && goTo(i)}
+                  onClick={() => (isActive ? setModalCard(card) : goTo(i))}
                 >
                   {/* Image */}
                   <img
@@ -335,6 +482,26 @@ export default function RiderTypeCarousel() {
                       >
                         {card.description}
                       </p>
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          marginTop: '16px',
+                          padding: '8px 16px',
+                          borderRadius: '9999px',
+                          background: 'rgba(245,245,245,0.1)',
+                          border: '1px solid rgba(245,245,245,0.2)',
+                          backdropFilter: 'blur(8px)',
+                          fontSize: '13px',
+                          fontWeight: 600,
+                          color: '#F5F5F5',
+                          fontFamily: '"Inter", sans-serif',
+                        }}
+                      >
+                        View details
+                        <ChevronRight size={15} strokeWidth={2} />
+                      </span>
                     </div>
                   )}
 
@@ -477,6 +644,14 @@ export default function RiderTypeCarousel() {
           border-color: rgba(245,245,245,0.2) !important;
         }
       `}</style>
+
+      {modalCard && (
+        <RiderTypeModal
+          open
+          category={toRiderProfile(modalCard)}
+          onClose={() => setModalCard(null)}
+        />
+      )}
     </div>
   );
 }
