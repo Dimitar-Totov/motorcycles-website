@@ -95,7 +95,7 @@ export default function Footer() {
 
         {/* ── Zone 2: Copyright bar ────────────────────────────────────────── */}
         <div className={styles.footerBottomInner}>
-          <p className={styles.copyright}>© 2025 Dimitar Motorcycles App. All rights reserved.</p>
+          <p className={styles.copyright}>© 2025 Dimitar Motorcycles Student App. All rights reserved. Only for educational purposes.</p>
         </div>
 
       </div>
