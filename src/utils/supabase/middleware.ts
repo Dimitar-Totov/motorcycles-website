@@ -2,7 +2,9 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 /** Routes that require an authenticated user. */
-const PROTECTED_ROUTES = ['/profile', '/create-product']
+const PROTECTED_ROUTES = ['/profile', '/create-product', '/dashboard']
+/** Routes that require an authenticated user with the 'admin' role. */
+const ADMIN_ROUTES = ['/admin']
 /** Routes only signed-out users should see (e.g. the auth screen). */
 const GUEST_ONLY_ROUTES = ['/auth']
 
@@ -40,13 +42,24 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
+  const matches = (routes: string[]) =>
+    routes.some((p) => pathname === p || pathname.startsWith(`${p}/`))
 
-  const needsAuth = PROTECTED_ROUTES.some((p) => pathname === p || pathname.startsWith(`${p}/`))
-  const guestOnly = GUEST_ONLY_ROUTES.some((p) => pathname === p || pathname.startsWith(`${p}/`))
+  const isAdminRoute = matches(ADMIN_ROUTES)
+  const needsAuth = isAdminRoute || matches(PROTECTED_ROUTES)
+  const guestOnly = matches(GUEST_ONLY_ROUTES)
 
   if (needsAuth && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth'
+    return NextResponse.redirect(url)
+  }
+
+  // Admin routes additionally require the 'admin' role. The role lives in
+  // app_metadata (set server-side, carried in the JWT) — never user_metadata.
+  if (isAdminRoute && user && user.app_metadata?.role !== 'admin') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/unauthorized'
     return NextResponse.redirect(url)
   }
 
