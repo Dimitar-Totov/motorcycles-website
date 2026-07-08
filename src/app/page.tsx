@@ -1,17 +1,12 @@
-import MotorcycleCatalog from '@/components/catalog-home/MotorcycleCatalog';
+import HeroSection from '@/components/HeroSection';
 import AboutSection from '@/components/AboutSection';
 import RiderTypeCarousel from '@/components/RiderTypeCarousel';
 import BrandsGrid from '@/components/BrandsGrid';
-import { getMotorcycles } from '@/lib/motorcycles';
 
-export default async function Home() {
-  // Read on the server so the catalog is server-rendered for SEO; filtering
-  // still happens client-side inside <MotorcycleCatalog>.
-  const motorcycles = await getMotorcycles();
-
+export default function Home() {
   return (
     <>
-      <MotorcycleCatalog motorcycles={motorcycles} />
+      <HeroSection />
       <AboutSection />
       <RiderTypeCarousel />
       <BrandsGrid />

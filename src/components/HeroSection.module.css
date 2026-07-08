@@ -1,0 +1,103 @@
+.hero {
+  position: relative;
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  min-height: 72vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroImage {
+  object-fit: cover;
+  object-position: center;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.56) 100%);
+  z-index: 1;
+}
+
+.content {
+  position: absolute;
+  z-index: 2;
+  text-align: center;
+  color: white;
+  padding: 0 20px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.mainText {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 20px 0;
+  letter-spacing: -0.02em;
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.9rem 1.6rem;
+  border-radius: 9999px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #0F172A;
+  background-color: #F59E0B;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 14px 40px rgba(245, 158, 11, 0.22);
+}
+
+.ctaButton:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
+
+.ctaButton:focus-visible {
+  outline: 2px solid rgba(245, 158, 11, 0.9);
+  outline-offset: 3px;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .hero {
+    height: 400px;
+  }
+
+  .mainText {
+    font-size: 2rem;
+  }
+
+  .ctaButton {
+    font-size: 1.1rem;
+    padding: 0.8rem 1.4rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .hero {
+    height: 300px;
+  }
+
+  .mainText {
+    font-size: 1.5rem;
+  }
+
+  .ctaButton {
+    font-size: 0.95rem;
+    padding: 0.72rem 1.2rem;
+  }
+
+  .content {
+    padding: 0 16px;
+  }
+}

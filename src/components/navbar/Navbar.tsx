@@ -58,8 +58,8 @@ export default function Navbar() {
     }`;
 
   return (
-    <div className="sticky top-5 z-50 flex justify-center px-4 mt-5">
-      <div className="relative w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl">
+    <div className="sticky top-4 z-50 flex justify-center px-4">
+      <div className="relative w-full max-w-5xl xl:max-w-6xl">
 
         {/* ── Pill Nav Bar ─────────────────────────────── */}
         <nav className="relative z-10 flex items-center justify-between h-[3.75rem] lg:h-[4.5rem] px-5 lg:px-8 rounded-full bg-slate-950/80 backdrop-blur-2xl border border-white/[0.08] shadow-[0_4px_28px_rgba(0,0,0,0.28)]">
