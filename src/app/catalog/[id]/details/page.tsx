@@ -3,9 +3,10 @@ import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, Palette, ShieldCheck, PackageCheck } from 'lucide-react';
-import { getMotorcycleById, getMotorcyclesByBrand } from '@/lib/motorcycles';
+import { getMotorcycleById, getMotorcyclesByBrand, isMotorcycleFavoritedByUser } from '@/lib/motorcycles';
 import Gallery from './Gallery';
 import AddToCartButton from './AddToCartButton';
+import AddToFavoritesButton from './AddToFavoritesButton';
 import HeroStats from './HeroStats';
 import BrandMarquee from './BrandMarquee';
 
@@ -69,6 +70,12 @@ export default async function ProductDetails({ params }: PageProps) {
 
   // Other listings from the same brand, for the auto-scrolling strip below.
   const brandBikes = await getMotorcyclesByBrand(m.brand, m.id, 10);
+
+  // Initial favorited state for AddToFavoritesButton, resolved server-side so
+  // there's no client-side fetch/flash (same pattern as `initialUser` seeding
+  // UserContext in the root layout). Anonymous visitors simply resolve to
+  // false — see `isMotorcycleFavoritedByUser`.
+  const initialFavorited = await isMotorcycleFavoritedByUser(m.id);
 
   // Left-column quick facts (kept distinct from the bottom stat strip, which
   // carries the headline Engine / Power / Year / Category numbers).
@@ -170,12 +177,25 @@ export default async function ProductDetails({ params }: PageProps) {
                 ))}
               </dl>
 
-              {/* Entrance on the wrapper so the button keeps its own hover lift */}
+              {/* Entrance on the wrapper so the buttons keep their own hover
+                  lift. Cart button is wrapped in its own flex-1 div rather
+                  than made a direct flex child: it sets w-full on itself
+                  (for its own mobile full-width sizing), which would fight
+                  the favourites button for row space as a bare flex item.
+                  The wrapper absorbs that and the favourites button stays a
+                  fixed-size square alongside it. */}
               <div
-                className="hero-anim hero-pop mt-8 w-full sm:w-auto"
+                className="hero-anim hero-pop mt-8 flex w-full items-center gap-3 sm:w-auto"
                 style={{ animationDelay: '480ms' }}
               >
-                <AddToCartButton name={m.name} inStock={m.inStock} />
+                <div className="flex-1 sm:flex-none">
+                  <AddToCartButton name={m.name} inStock={m.inStock} />
+                </div>
+                <AddToFavoritesButton
+                  motorcycleId={m.id}
+                  name={m.name}
+                  initialFavorited={initialFavorited}
+                />
               </div>
             </div>
 

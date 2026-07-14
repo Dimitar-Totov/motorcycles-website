@@ -4,6 +4,7 @@ import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Sun, Moon } from 'lucide-react'
 import { useUser } from '@/context/UserContext'
+import type { Motorcycle } from '@/components/catalog-home/types'
 import Sidebar from './Sidebar'
 import BottomNav from './BottomNav'
 import FavoritesTab from './tabs/Favorites'
@@ -33,7 +34,12 @@ const TAB_TITLES: Record<TabId, string> = {
   'stats':           'Stats',
 }
 
-export default function Profile() {
+interface Props {
+  /** Server-resolved favorites, fetched in `page.tsx` and threaded down to `FavoritesTab`. */
+  favoriteMotorcycles: Motorcycle[]
+}
+
+export default function Profile({ favoriteMotorcycles }: Props) {
   const { user, logout } = useUser()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<TabId>('favorites')
@@ -120,7 +126,7 @@ export default function Profile() {
           {/* Tab content — key re-mounts the div to trigger fade-slide-in */}
           <div className="p-4 md:p-6 lg:p-8">
             <div key={activeTab} className="animate-fade-slide-in">
-              {activeTab === 'favorites'       && <FavoritesTab />}
+              {activeTab === 'favorites'       && <FavoritesTab motorcycles={favoriteMotorcycles} />}
               {activeTab === 'compare'         && <CompareTab />}
               {activeTab === 'alerts'          && <AlertsTab />}
               {activeTab === 'recently-viewed' && <RecentlyViewedTab />}

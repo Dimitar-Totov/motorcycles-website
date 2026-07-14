@@ -116,3 +116,65 @@ export const getMotorcycleById = cache(async (id: string): Promise<Motorcycle | 
   if (error || !data) return null
   return dbRowToMotorcycle(data as MotorcycleRow)
 })
+
+/**
+ * Fetch the current user's full favorited listing list for the profile page's
+ * Favorites tab. Single embedded-join query (`favorites -> motorcycles`):
+ * `favorites` is RLS-scoped to the caller automatically (no manual user_id
+ * filter needed) and `motorcycles` is publicly readable, so the embed resolves
+ * without a second round-trip — cheaper than fetching favorite ids then a
+ * second `getMotorcyclesByIds` call. No signed-in user (shouldn't happen on
+ * `/profile`, which the proxy gates, but handled defensively like the rest of
+ * the codebase treats `auth.getUser()` returning null server-side) or zero
+ * favorites both resolve to `[]` rather than throwing.
+ */
+export async function getFavoriteMotorcycles(): Promise<Motorcycle[]> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return []
+
+  const { data, error } = await supabase
+    .from('favorites')
+    .select('motorcycles(*)')
+    .order('created_at', { ascending: false })
+
+  if (error || !data) {
+    if (error) console.error('Failed to load favorite motorcycles:', error.message)
+    return []
+  }
+
+  return (data as unknown as { motorcycles: MotorcycleRow | null }[])
+    .map((row) => row.motorcycles)
+    .filter((row): row is MotorcycleRow => row !== null)
+    .map(dbRowToMotorcycle)
+}
+
+/**
+ * Does the current user (if any) have this listing favorited? Used to seed
+ * the detail page's `AddToFavoritesButton` with its initial state server-side
+ * (no client-side fetch/flash). Anonymous visitors always resolve to `false`
+ * without querying `favorites` (the table grants `authenticated` only, so an
+ * anon query would just error). RLS scopes the select to the caller, so no
+ * manual user_id filter is needed once signed in.
+ */
+export async function isMotorcycleFavoritedByUser(motorcycleId: string): Promise<boolean> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return false
+
+  const { data, error } = await supabase
+    .from('favorites')
+    .select('motorcycle_id')
+    .eq('motorcycle_id', motorcycleId)
+    .maybeSingle()
+
+  if (error) {
+    console.error('Failed to check favorite status:', error.message)
+    return false
+  }
+  return !!data
+}

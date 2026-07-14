@@ -1,0 +1,53 @@
+/* Scoped to the profile Favorites grid only — MotorcycleCard.css is shared
+   with the public catalog and must not be touched for this. */
+
+/* Positioning ancestor for the remove-favorite button, layered as a SIBLING
+   of MotorcycleCard's own <Link> (see FavoriteCard.tsx). */
+.favorite-card {
+  position: relative;
+}
+
+/* `.moto-card:hover` (MotorcycleCard.css) lifts the card's own <Link> via
+   `transform: translateY(-6px)` on fine-pointer hover. That transform only
+   applies to the Link itself — our remove button is a sibling, not a
+   descendant, so without this rule it stays put while the photo lifts away,
+   making it look "detached"/below the image's new top edge instead of
+   anchored to its corner. Mirror the same lift (same trigger media query,
+   same distance) so the two move together.
+   Uses the native `transform` property (not `scale`/`translate`), which
+   Tailwind v4's scale-* utilities on the button don't touch — so this
+   composes cleanly with the button's own hover:scale-110 / active:scale-90
+   instead of fighting them for the same property. */
+@media (hover: hover) and (pointer: fine) {
+  .favorite-card:hover .favorite-card__remove {
+    transform: translateY(-6px);
+  }
+
+  .favorite-card:active .favorite-card__remove {
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .favorite-card:hover .favorite-card__remove,
+  .favorite-card:active .favorite-card__remove {
+    transform: none;
+  }
+}
+
+/* `transition` shorthand (not just the `transform` longhand) so this
+   unlayered rule fully owns transition-property/duration for this element —
+   otherwise it would only partially override the button's Tailwind
+   `transition-transform duration-100` utility class, leaving stale timing
+   behind. `scale` (the button's own hover:scale-110 / active:scale-90) keeps
+   its original snappy 100ms; only the card-sync `transform` (translateY)
+   needs to match MotorcycleCard.css's 420ms lift. */
+.favorite-card__remove {
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1), scale 100ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .favorite-card__remove {
+    transition: none;
+  }
+}
